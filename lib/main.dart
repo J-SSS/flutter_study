@@ -1,8 +1,30 @@
 import 'package:flutter/material.dart';
+/*
+플러터 프로젝트를 실행하면 main() 함수와 그 안의 runApp() 함수가 실행된다.
 
+1. MaterialApp : Material Design 기반의 위젯들을 사용할 수 있게 해준다
+2. Scaffold : 화면 전체의 레이아웃 및 UI관련 기능(알림, 탭 추가 등)
+
+3. MaterialApp + scaffold가 가장 기본적인 설정
+4. 앱바 : 상단바 위젯, 스낵바 : 알림창 위젯
+ */
 void main() {
-  runApp(const MyApp());
+  runApp(
+    MaterialApp(
+      home : Scaffold(
+        body : Center(
+         child : Text(
+           'Hello Code Factory',
+         )
+        )
+      )
+    )
+  );
 }
+
+// void main() {
+//   runApp(const MyApp());
+// }
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
