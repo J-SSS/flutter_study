@@ -62,6 +62,9 @@ android {
 
 flutter {
     source '../..'
+    compileSdkVersion = 32
+    minSdkVersion = 20
+
 }
 
 dependencies {}
