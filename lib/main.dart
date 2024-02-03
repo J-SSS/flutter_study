@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_study/screen/home_screen.dart';
+// import 'package:flutter_study/screen/home_screen.dart';
+import 'package:flutter_study/screen/home_screen2.dart';
 /*
 플러터 프로젝트를 실행하면 main() 함수와 그 안의 runApp() 함수가 실행된다.
 
@@ -12,9 +13,9 @@ import 'package:flutter_study/screen/home_screen.dart';
 void main() {
   // runApp(MyApp());
   // runApp(SplashScreen());
-  // runApp(MaterialApp(
-  //   home: HomeScreen(),
-  // ));
+  runApp(MaterialApp(
+    home: HomeScreen(),
+  ));
 }
 
 
