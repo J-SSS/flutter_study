@@ -71,11 +71,31 @@ class MyTimeTimer extends StatelessWidget {
         actions: [
           IconButton(
             icon: Icon(Icons.settings),
-            onPressed: () {
+            onPressed: () {},
+          ),
+          PopupMenuButton<String>(
+            onSelected: (value) {
+              // 팝업 메뉴에서 선택된 항목에 대한 동작 수행
+              print('Selected: $value');
             },
+            itemBuilder: (BuildContext context) => [
+              PopupMenuItem<String>(
+                value: 'item1',
+                child: Text('Item 1'),
+              ),
+              PopupMenuItem<String>(
+                value: 'item2',
+                child: Text('Item 2'),
+              ),
+              PopupMenuItem<String>(
+                value: 'item3',
+                child: Text('Item 3'),
+              ),
+            ],
           ),
         ],
       ),
+      drawer: MyDrawer(), // 보조 화면
       body: Center(
         child : Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -294,5 +314,38 @@ class pizzaTypeBasePainter extends CustomPainter {
   @override
   bool shouldRepaint(CustomPainter oldDelegate) {
     return false;
+  }
+}
+
+class MyDrawer extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Drawer(
+      child: ListView(
+        padding: EdgeInsets.zero,
+        children: [
+          DrawerHeader(
+            decoration: BoxDecoration(
+              color: Colors.blue,
+            ),
+            child: Text('Drawer Header'),
+          ),
+          ListTile(
+            title: Text('Item 1'),
+            onTap: () {
+              // 리스트 항목을 눌렀을 때 수행할 동작
+              Navigator.pop(context); // Drawer를 닫는 코드
+            },
+          ),
+          ListTile(
+            title: Text('Item 2'),
+            onTap: () {
+              // 리스트 항목을 눌렀을 때 수행할 동작
+              Navigator.pop(context); // Drawer를 닫는 코드
+            },
+          ),
+        ],
+      ),
+    );
   }
 }
