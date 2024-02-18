@@ -68,6 +68,14 @@ class MyTimeTimer extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text('시간 ${context.select((TimeObserver p) => p.remainTime)}'),
+        // leading: Builder(
+        //   builder: (context) => IconButton(
+        //     icon: Icon(Icons.menu),
+        //     onPressed: () {
+        //       Scaffold.of(context).openEndDrawer();
+        //     },
+        //   ),
+        // ),
         actions: [
           IconButton(
             icon: Icon(Icons.settings),
@@ -127,6 +135,7 @@ class _pizzaTypeState extends State<pizzaType> {
   Widget build(BuildContext context) {
     return GestureDetector(
       onPanUpdate: (details) {
+          showOverlayText(context);
           setState(() {
             if(!context.read<TimeObserver>().isPlaying || context.read<TimeObserver>().isPause) {
               clickPoint = details.localPosition;
@@ -139,11 +148,56 @@ class _pizzaTypeState extends State<pizzaType> {
         painter: pizzaTypePainter(
             context : context,
             clickPoint: clickPoint,
-            remainTime: context.watch<TimeObserver>().remainTime
+            remainTime: context.watch<TimeObserver>().remainTime,
+            callbackFunc: callbackFunc
         ),
       ),
     );
   }
+
+  void callbackFunc (BuildContext context, angleToMin){
+
+  }
+
+  void showOverlayText(BuildContext context) {
+    OverlayEntry overlayEntry;
+
+    overlayEntry = OverlayEntry(
+      builder: (context) => Positioned(
+        top: MediaQuery.of(context).size.height / 2 - 110.0,
+        left: MediaQuery.of(context).size.width / 2 - 50.0,
+        child: Material(
+          color: Colors.transparent,
+          child: Container(
+            width: 120.0,
+            height: 60.0,
+            decoration: BoxDecoration(
+              color: Colors.blueGrey.withOpacity(0.01),
+              borderRadius: BorderRadius.circular(15.0),
+            ),
+            child: Center(
+              child: Text(
+                '60:00',
+                style: TextStyle(
+                    color: Colors.white.withOpacity(0.5),
+                    fontSize: 30,
+                    fontWeight: FontWeight.bold
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+
+    Overlay.of(context).insert(overlayEntry);
+
+    // 1초 후에 OverlayEntry를 제거하여 텍스트를 사라지게 함
+    Future.delayed(Duration(milliseconds: 500), () {
+      overlayEntry.remove();
+    });
+  }
+
 }
 
 class pizzaTypePainter extends CustomPainter {
@@ -151,7 +205,9 @@ class pizzaTypePainter extends CustomPainter {
   BuildContext context;
   int? remainTime;
 
-  pizzaTypePainter({required this.context, required this.clickPoint, this.remainTime});
+  Function? callbackFunc;
+
+  pizzaTypePainter({required this.context, required this.clickPoint, this.remainTime, this.callbackFunc});
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -165,6 +221,7 @@ class pizzaTypePainter extends CustomPainter {
     double centerY = size.height / 2;
     double radius = size.width / 2;
 
+
     double startAngle = -math.pi / 2; // 12시 방향에서 시작
     double clickAngle = math.atan2(clickPoint.dy - centerY, clickPoint.dx - centerX);
     double sweepAngle;
@@ -176,11 +233,11 @@ class pizzaTypePainter extends CustomPainter {
     }
 
 
-
     var angleToMin = (sweepAngle/(2 * math.pi/60)).floor();
 
     // context.read<TimeObserver>().remainTime = angleToMin;
     sweepAngle = (2 * math.pi)/60 * angleToMin;
+
 
     if(!context.read<TimeObserver>().ableEdit){
       if(context.read<TimeObserver>().isPlaying || context.read<TimeObserver>().isPause){
@@ -190,7 +247,6 @@ class pizzaTypePainter extends CustomPainter {
         }
       }
     }
-
 
     // print(2 * math.pi/60); // 0.10471975511965977
     // print(sweepAngle/(2 * math.pi/60));
