@@ -1,23 +1,31 @@
 import 'package:flutter/material.dart';
+
 // import 'package:flutter_study/screen/home_screen.dart';
-import 'package:flutter_study/screen/home_screen2.dart';
-/*
-플러터 프로젝트를 실행하면 main() 함수와 그 안의 runApp() 함수가 실행된다.
+// import 'package:flutter_study/screen/home_screen2.dart';
+// import 'package:flutter_study/timer/timer_example.dart';
+// import 'package:flutter_study/study/provider.dart'; // 코딩셰프 Provider 입문 1&2
 
-1. MaterialApp : Material Design 기반의 위젯들을 사용할 수 있게 해준다
-2. Scaffold : 화면 전체의 레이아웃 및 UI관련 기능(알림, 탭 추가 등)
 
-3. MaterialApp + scaffold가 가장 기본적인 설정
-4. 앱바 : 상단바 위젯, 스낵바 : 알림창 위젯
+import 'package:flutter_study/time_timer/timer.dart';
+
+/**
+  플러터 프로젝트를 실행하면 main() 함수와 그 안의 runApp() 함수가 실행된다.
+
+  1. MaterialApp : Material Design 기반의 위젯들을 사용할 수 있게 해준다
+  2. Scaffold : 화면 전체의 레이아웃 및 UI관련 기능(알림, 탭 추가 등)
+
+  3. MaterialApp + scaffold가 가장 기본적인 설정
+  4. 앱바 : 상단바 위젯, 스낵바 : 알림창 위젯
  */
 void main() {
-  // runApp(MyApp());
-  // runApp(SplashScreen());
-  runApp(MaterialApp(
-    home: HomeScreen(),
-  ));
-}
+  runApp(MyApp());
 
+  // runApp(SplashScreen());
+
+  // runApp(MaterialApp(
+  //   home: HomeScreen(),
+  // ));
+}
 
 /*
 StatelessWidget 클래스를 상속 받으면
