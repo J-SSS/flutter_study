@@ -1,11 +1,45 @@
 import 'package:flutter/material.dart';
 import 'dart:math' as math;
+
 import 'package:provider/provider.dart';
+import 'package:carousel_slider/carousel_slider.dart';
 
 import 'package:flutter_study/time_timer/buttom_bar.dart';
+import 'package:flutter_study/time_timer/list_drawer.dart';
 
 
 class configObserver with ChangeNotifier {
+
+  /*
+  - 남은 시간 표시 여부
+  - 초침 표시
+
+  - 입력 / 특정 시간까지
+
+  - 작동 중 메뉴 숨김
+  - 꽉 채운 원으로 시작
+  - 알림 스타일 (소리 / 진동 / 무음)
+  - 알림시 화면 효과
+  - 알림 종료(자동, 정지 할 때 까지)
+
+  - 중간 알림 (설정 안함 / 분 / 초)
+  - 중간 알림 스타일 (소리 / 진동 / 무음)
+  - 종료임박시 깜빡임 (설정 안함 / 분 / 초)
+
+  - 위젯 만들 수 있나?
+
+  - 테마 설정
+  - 후원
+  - 피드백
+  - 오픈소스라이선스
+
+  //////////반복기능//////////
+  반복없음 / 현재 반복 / 프리셋 순서대로
+
+
+  //////////사전설정//////////
+  순서 변경 기능
+   */
 
 }
 class TimeObserver with ChangeNotifier {
@@ -103,18 +137,53 @@ class MyTimeTimer extends StatelessWidget {
           ),
         ],
       ),
-      drawer: MyDrawer(), // 보조 화면
+      drawer: ListDrawer(), // 보조 화면
       body: Center(
         child : Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Stack(
-              children:[
-                pizzaTypeBase(),
-                pizzaType(),
-              ]
+            CarouselSlider(
+            options: CarouselOptions(
+                height: 400,
+                aspectRatio: 16 / 9, // 화면 비율(16/9)
+                viewportFraction: 1.0, // 페이지 차지 비율(0.8)
+                autoPlay: false, // 자동 슬라이드(false)
+                autoPlayInterval: const Duration(seconds: 4), // 자동 슬라이드 주기(4seconds)
+                onPageChanged: ((index, reason) { // 페이지가 슬라이드될 때의 기능 정의
+                  print('미디어쿼리');
+                  print(MediaQuery.of(context).size);
+                }),
             ),
-            SizedBox(height: 100,),
+            items: ['pizza','battery','heart','spped'].map((type) {
+              return Builder(
+                builder: (BuildContext context) {
+                  return Container(
+                      width: MediaQuery.of(context).size.width,
+                      height: 30,
+                      margin: EdgeInsets.symmetric(horizontal: 10.0),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.5),
+                            spreadRadius: 1,
+                            blurRadius: 1,
+                            offset: Offset(3, -5), // 음영의 위치 조절
+                          ),
+                        ]
+                      ),
+                      child: Text('text ${type}', style: TextStyle(fontSize: 16.0),)
+                  );
+                },
+              );
+            }).toList()),
+            // Stack(
+            //   children:[
+            //     pizzaTypeBase(),
+            //     pizzaType(),
+            //   ]
+            // ),
+            SizedBox(height: 90,),
             ButtomBarWidget()
           ],
         ),
@@ -130,18 +199,22 @@ class pizzaType extends StatefulWidget {
 
 class _pizzaTypeState extends State<pizzaType> {
   Offset clickPoint = Offset(150.0, 150.0); // 초기값: 원의 중심
+  Size size = Size(350.0, 350.0);
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onPanUpdate: (details) {
           showOverlayText(context);
+
           setState(() {
             if(!context.read<TimeObserver>().isPlaying || context.read<TimeObserver>().isPause) {
               clickPoint = details.localPosition;
               context.read<TimeObserver>().ableEdit = true;
             }
           });
+
+          angleToMin(details.localPosition, size);
       },
       child: CustomPaint(
         size: Size(350.0, 350.0), // 원하는 크기로 지정
@@ -153,6 +226,29 @@ class _pizzaTypeState extends State<pizzaType> {
         ),
       ),
     );
+  }
+
+  // 클릭 위치를 1/60 시간 단위로 변환
+  void angleToMin (Offset clickPoint, Size size){
+
+    double centerX = size.width / 2;
+    double centerY = size.height / 2;
+    double radius = size.width / 2;
+
+    double startAngle = -math.pi / 2; // 12시 방향에서 시작
+    double clickAngle = math.atan2(clickPoint.dy - centerY, clickPoint.dx - centerX);
+    double sweepAngle;
+
+    if(clickAngle > -math.pi && clickAngle < startAngle){ // 180 ~ -90(270)도
+      sweepAngle = 2 * math.pi + clickAngle - startAngle;
+    } else { // -90 ~ 180도
+      sweepAngle = clickAngle - startAngle;
+    }
+
+    var angleToMin = (sweepAngle/(2 * math.pi/60)).floor();
+
+    // print(angleToMin);
+
   }
 
   void callbackFunc (BuildContext context, angleToMin){
@@ -232,12 +328,10 @@ class pizzaTypePainter extends CustomPainter {
       sweepAngle = clickAngle - startAngle;
     }
 
-
     var angleToMin = (sweepAngle/(2 * math.pi/60)).floor();
 
     // context.read<TimeObserver>().remainTime = angleToMin;
     sweepAngle = (2 * math.pi)/60 * angleToMin;
-
 
     if(!context.read<TimeObserver>().ableEdit){
       if(context.read<TimeObserver>().isPlaying || context.read<TimeObserver>().isPause){
@@ -337,7 +431,7 @@ class pizzaTypeBasePainter extends CustomPainter {
 
     double radius = size.width / 2;
 
-    for(int angle = 0 ; angle < 360 ; angle+=5){
+    for(int angle = 0 ; angle < 360 ; angle+=6){
       int subRadius = 0;
       final Paint paint = Paint()
         ..color = Colors.grey;
@@ -370,38 +464,5 @@ class pizzaTypeBasePainter extends CustomPainter {
   @override
   bool shouldRepaint(CustomPainter oldDelegate) {
     return false;
-  }
-}
-
-class MyDrawer extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Drawer(
-      child: ListView(
-        padding: EdgeInsets.zero,
-        children: [
-          DrawerHeader(
-            decoration: BoxDecoration(
-              color: Colors.blue,
-            ),
-            child: Text('Drawer Header'),
-          ),
-          ListTile(
-            title: Text('Item 1'),
-            onTap: () {
-              // 리스트 항목을 눌렀을 때 수행할 동작
-              Navigator.pop(context); // Drawer를 닫는 코드
-            },
-          ),
-          ListTile(
-            title: Text('Item 2'),
-            onTap: () {
-              // 리스트 항목을 눌렀을 때 수행할 동작
-              Navigator.pop(context); // Drawer를 닫는 코드
-            },
-          ),
-        ],
-      ),
-    );
   }
 }
