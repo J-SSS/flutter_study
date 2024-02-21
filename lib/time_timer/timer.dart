@@ -101,6 +101,7 @@ class MyTimeTimer extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        // backgroundColor: Colors.green,
         title: Text('시간 ${context.select((TimeObserver p) => p.remainTime)}'),
         // leading: Builder(
         //   builder: (context) => IconButton(
@@ -144,36 +145,46 @@ class MyTimeTimer extends StatelessWidget {
           children: [
             CarouselSlider(
             options: CarouselOptions(
-                height: 400,
+                height: 500,
                 aspectRatio: 16 / 9, // 화면 비율(16/9)
                 viewportFraction: 1.0, // 페이지 차지 비율(0.8)
-                autoPlay: false, // 자동 슬라이드(false)
-                autoPlayInterval: const Duration(seconds: 4), // 자동 슬라이드 주기(4seconds)
+                // autoPlay: false, // 자동 슬라이드(false)
+                // autoPlayInterval: const Duration(seconds: 4), // 자동 슬라이드 주기(4seconds)
                 onPageChanged: ((index, reason) { // 페이지가 슬라이드될 때의 기능 정의
                   print('미디어쿼리');
                   print(MediaQuery.of(context).size);
                 }),
             ),
-            items: ['pizza','battery','heart','spped'].map((type) {
+            items: ['pizza','battery'].map((type) {
               return Builder(
                 builder: (BuildContext context) {
-                  return Container(
-                      width: MediaQuery.of(context).size.width,
-                      height: 30,
-                      margin: EdgeInsets.symmetric(horizontal: 10.0),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.grey.withOpacity(0.5),
-                            spreadRadius: 1,
-                            blurRadius: 1,
-                            offset: Offset(3, -5), // 음영의 위치 조절
+                  return Padding(
+                      padding: EdgeInsets.fromLTRB(10.0,5.0,10.0,5.0), //좌 상 우 하
+                      child: Container(
+                          width: MediaQuery.of(context).size.width,
+                          margin: EdgeInsets.symmetric(horizontal: 5.0),
+                          decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(15.0),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black26.withOpacity(0.1),
+                                  spreadRadius: 1,
+                                  blurRadius: 5,
+                                  offset: Offset(0, 3), // 음영의 위치 조절
+                                ),
+                              ]
                           ),
-                        ]
-                      ),
-                      child: Text('text ${type}', style: TextStyle(fontSize: 16.0),)
-                  );
+                          child: Center(
+                            child: Stack(
+                              children:[
+                                pizzaTypeBase(),
+                                pizzaType(),
+                              ]
+                          ),
+                      )
+                    )
+                 );
                 },
               );
             }).toList()),
@@ -183,7 +194,7 @@ class MyTimeTimer extends StatelessWidget {
             //     pizzaType(),
             //   ]
             // ),
-            SizedBox(height: 90,),
+            SizedBox(height: 50,),
             ButtomBarWidget()
           ],
         ),
@@ -308,9 +319,9 @@ class pizzaTypePainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     Paint paint = Paint()
-      // ..color = Colors.red
-      // ..color = Color(0xFF56B5B7)
-      ..color = Color.fromRGBO(106,211,211, 1.0)
+      ..color = Colors.red
+      // ..color = Color(0xFF56B5B7) // 진한 민트
+      // ..color = Color.fromRGBO(106,211,211, 1.0) // 민트
       ..style = PaintingStyle.fill; // 채우기로 변경
 
     double centerX = size.width / 2;
