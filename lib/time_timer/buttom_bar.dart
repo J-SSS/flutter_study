@@ -3,6 +3,7 @@ import 'dart:async';
 import 'dart:math' as math;
 import 'package:provider/provider.dart';
 import 'package:flutter_study/time_timer/timer.dart';
+import 'package:flutter_study/time_timer/on_timer.dart' as onTimer;
 
 class ButtomBarWidget extends StatefulWidget{
   const ButtomBarWidget({super.key});
@@ -111,7 +112,11 @@ class _ButtomBarWidgetState extends State<ButtomBarWidget>{
               ),
               child: TextButton(
                 onPressed: () {
-                  _click(context);
+                  // _click(context);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => onTimer.OnTimerScreen()),
+                  );
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.white,
@@ -119,7 +124,6 @@ class _ButtomBarWidgetState extends State<ButtomBarWidget>{
                   padding: EdgeInsets.all(10.0), // 아이콘과 버튼의 경계
                   fixedSize: Size(90.0, 90.0), // 버튼의 크기를 지정
                 ),
-                // child: Icon(context.select((TimeObserver t) => t.playBtn)),
                 child:  Image.asset(
                   'assets/icon/${context.select((TimeObserver t) => t.playBtn)}.png',
                   width: 120.0,
