@@ -3,6 +3,8 @@ import 'dart:math' as math;
 import 'package:provider/provider.dart';
 
 class ListDrawer extends StatelessWidget {
+  const ListDrawer({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Drawer(

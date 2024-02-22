@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 // import 'package:flutter_study/study/provider.dart'; // 코딩셰프 Provider 입문 1&2
 
 
-import 'package:flutter_study/time_timer/timer.dart';
+import 'package:flutter_study/time_timer/base_timer.dart';
 
 /**
   플러터 프로젝트를 실행하면 main() 함수와 그 안의 runApp() 함수가 실행된다.

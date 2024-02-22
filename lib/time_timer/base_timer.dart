@@ -2,76 +2,12 @@ import 'package:flutter/material.dart';
 import 'dart:math' as math;
 
 import 'package:provider/provider.dart';
-import 'package:carousel_slider/carousel_slider.dart';
 
-import 'package:flutter_study/time_timer/buttom_bar.dart';
+import 'package:flutter_study/time_timer/bottom_bar.dart';
+import 'package:flutter_study/time_timer/listener/app_config.dart';
+import 'package:flutter_study/time_timer/listener/time_config.dart';
 import 'package:flutter_study/time_timer/list_drawer.dart';
 import 'package:flutter_study/time_timer/timer_utils.dart' as utils;
-
-class configObserver with ChangeNotifier {
-  /*
-  - 남은 시간 표시 여부
-  - 초침 표시
-
-  - 입력 / 특정 시간까지
-
-  - 작동 중 메뉴 숨김
-  - 꽉 채운 원으로 시작
-  - 알림 스타일 (소리 / 진동 / 무음)
-  - 알림시 화면 효과
-  - 알림 종료(자동, 정지 할 때 까지)
-
-  - 중간 알림 (설정 안함 / 분 / 초)
-  - 중간 알림 스타일 (소리 / 진동 / 무음)
-  - 종료임박시 깜빡임 (설정 안함 / 분 / 초)
-
-  - 위젯 만들 수 있나?
-
-  - 테마 설정
-  - 후원
-  - 피드백
-  - 오픈소스라이선스
-
-  //////////반복기능//////////
-  반복없음 / 현재 반복 / 프리셋 순서대로
-
-
-  //////////사전설정//////////
-  순서 변경 기능
-   */
-}
-
-class TimeObserver with ChangeNotifier {
-  String timeType = 'M'; // min : 분, sec : 초
-
-  int remainTime = 60;
-  bool isPlaying = false;
-  bool isPause = false;
-  bool ableEdit = false;
-
-  var playBtn = 'btm_play';
-  var loopBtn = 'btm_roop_1';
-
-  set setPlayBtn(var btn) {
-    this.playBtn = btn;
-    notifyListeners();
-  }
-
-  set setRemainTime(int remainTime) {
-    this.remainTime = remainTime;
-    notifyListeners();
-  }
-
-  set setLoopBtn(var btn) {
-    int currentSet = int.parse(this.loopBtn.split('_')[2]);
-    if (currentSet != 4) {
-      this.loopBtn = 'btm_roop_${currentSet + 1}';
-    } else {
-      this.loopBtn = 'btm_roop_1';
-    }
-    notifyListeners();
-  }
-}
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key}); // 이유 찾아보기
@@ -80,8 +16,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (context) => TimeObserver()),
-        ChangeNotifierProvider(create: (context) => configObserver()),
+        ChangeNotifierProvider(create: (context) => TimeConfigListener()),
+        ChangeNotifierProvider(create: (context) => AppConfigListener()),
       ],
       child: MaterialApp(
         home: MyTimeTimer(),
@@ -137,54 +73,15 @@ class MyTimeTimer extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            CarouselSlider(
-                options: CarouselOptions(
-                  height: 500,
-                  aspectRatio: 16 / 9, // 화면 비율(16/9)
-                  viewportFraction: 1.0, // 페이지 차지 비율(0.8)
-                  // autoPlay: false, // 자동 슬라이드(false)
-                  // autoPlayInterval: const Duration(seconds: 4), // 자동 슬라이드 주기(4seconds)
-                  onPageChanged: ((index, reason) {
-                    // 페이지가 슬라이드될 때의 기능 정의
-                    print('미디어쿼리');
-                    print(MediaQuery.of(context).size);
-                  }),
-                ),
-                items: ['pizza', 'battery'].map((type) {
-                  return Builder(
-                    builder: (BuildContext context) {
-                      return Padding(
-                          padding: EdgeInsets.fromLTRB(
-                              10.0, 5.0, 10.0, 5.0), //좌 상 우 하
-                          child: Container(
-                              width: MediaQuery.of(context).size.width,
-                              margin: EdgeInsets.symmetric(horizontal: 5.0),
-                              decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(15.0),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.black26.withOpacity(0.1),
-                                      spreadRadius: 1,
-                                      blurRadius: 5,
-                                      offset: Offset(0, 3), // 음영의 위치 조절
-                                    ),
-                                  ]),
-                              child: Center(
-                                child: Stack(children: [
-                                  pizzaTypeBase(),
-                                  pizzaType(),
-                                ]),
-                              )));
-                    },
-                  );
-                }).toList()),
-            // Stack(
-            //   children:[
-            //     pizzaTypeBase(),
-            //     pizzaType(),
-            //   ]
-            // ),
+            Container(
+              child: Row(
+                children: [], // 시간 직접입력(손목시계 버튼), 테마버튼, 60min
+              ),
+            ),
+            Stack(children: [
+              pizzaTypeBase(),
+              pizzaType(),
+            ]),
             SizedBox(
               height: 50,
             ),
@@ -212,10 +109,10 @@ class _pizzaTypeState extends State<pizzaType> {
         utils.showOverlayText(context);
 
         setState(() {
-          if (!context.read<TimeObserver>().isPlaying ||
-              context.read<TimeObserver>().isPause) {
+          if (!context.read<TimeConfigListener>().isPlaying ||
+              context.read<TimeConfigListener>().isPause) {
             clickPoint = details.localPosition;
-            context.read<TimeObserver>().ableEdit = true;
+            context.read<TimeConfigListener>().ableEdit = true;
           }
         });
 
@@ -224,10 +121,10 @@ class _pizzaTypeState extends State<pizzaType> {
       child: CustomPaint(
         size: Size(350.0, 350.0), // 원하는 크기로 지정
         painter: pizzaTypePainter(
-            context: context,
-            clickPoint: clickPoint,
-            remainTime: context.watch<TimeObserver>().remainTime,
-            ),
+          context: context,
+          clickPoint: clickPoint,
+          remainTime: context.watch<TimeConfigListener>().remainTime,
+        ),
       ),
     );
   }
@@ -241,7 +138,8 @@ class _pizzaTypeState extends State<pizzaType> {
     double radius = size.width / 2;
 
     double startAngle = -math.pi / 2; // 12시 방향에서 시작
-    double clickAngle = math.atan2(clickPoint.dy - centerY, clickPoint.dx - centerX);
+    double clickAngle =
+        math.atan2(clickPoint.dy - centerY, clickPoint.dx - centerX);
     double sweepAngle;
 
     if (clickAngle > -math.pi && clickAngle < startAngle) {
@@ -255,9 +153,8 @@ class _pizzaTypeState extends State<pizzaType> {
     angleToMin = (sweepAngle / (2 * math.pi / 60)).floor();
     angleToMin == 0 ? angleToMin = 60 : angleToMin;
 
-    context.read<TimeObserver>().setRemainTime = angleToMin;
+    context.read<TimeConfigListener>().setRemainTime = angleToMin;
   }
-
 }
 
 class pizzaTypePainter extends CustomPainter {
@@ -265,19 +162,18 @@ class pizzaTypePainter extends CustomPainter {
   BuildContext context;
   int? remainTime;
 
-
-  pizzaTypePainter(
-      {required this.context,
-      required this.clickPoint,
-      this.remainTime,
-      });
+  pizzaTypePainter({
+    required this.context,
+    required this.clickPoint,
+    this.remainTime,
+  });
 
   @override
   void paint(Canvas canvas, Size size) {
     Paint paint = Paint()
-      ..color = Colors.red
+      // ..color = Colors.red
       // ..color = Color(0xFF56B5B7) // 진한 민트
-      // ..color = Color.fromRGBO(106,211,211, 1.0) // 민트
+      ..color = Color.fromRGBO(106,211,211, 1.0) // 민트
       ..style = PaintingStyle.fill; // 채우기로 변경
 
     double centerX = size.width / 2;
@@ -299,12 +195,12 @@ class pizzaTypePainter extends CustomPainter {
 
     var angleToMin = (sweepAngle / (2 * math.pi / 60)).floor();
 
-    // context.read<TimeObserver>().remainTime = angleToMin;
+    // context.read<TimeConfigListener>().remainTime = angleToMin;
     sweepAngle = (2 * math.pi) / 60 * angleToMin;
 
-    if (!context.read<TimeObserver>().ableEdit) {
-      if (context.read<TimeObserver>().isPlaying ||
-          context.read<TimeObserver>().isPause) {
+    if (!context.read<TimeConfigListener>().ableEdit) {
+      if (context.read<TimeConfigListener>().isPlaying ||
+          context.read<TimeConfigListener>().isPause) {
         final remainTime = this.remainTime;
         if (remainTime != null) {
           sweepAngle = (2 * math.pi) / 60 * remainTime;

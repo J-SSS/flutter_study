@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 import 'dart:math' as math;
 import 'package:provider/provider.dart';
-import 'package:flutter_study/time_timer/timer.dart';
+import 'package:flutter_study/time_timer/base_timer.dart';
 import 'package:flutter_study/time_timer/on_timer.dart' as onTimer;
+
+import 'package:flutter_study/time_timer/listener/app_config.dart';
+import 'package:flutter_study/time_timer/listener/time_config.dart';
 
 class ButtomBarWidget extends StatefulWidget{
   const ButtomBarWidget({super.key});
@@ -83,7 +86,7 @@ class _ButtomBarWidgetState extends State<ButtomBarWidget>{
                   SizedBox(width: 100,),
                   TextButton(
                     onPressed: () {
-                      context.read<TimeObserver>().setLoopBtn = 'set';
+                      context.read<TimeConfigListener>().setLoopBtn = 'set';
                     },
                     style: ElevatedButton.styleFrom(
                       shape: CircleBorder(), // 동그란 모양을 지정
@@ -91,7 +94,7 @@ class _ButtomBarWidgetState extends State<ButtomBarWidget>{
                       fixedSize: Size(70.0, 70.0), // 버튼의 크기를 지정
                     ),
                     child:  Image.asset(
-                      'assets/icon/${context.select((TimeObserver t) => t.loopBtn)}.png',
+                      'assets/icon/${context.select((TimeConfigListener t) => t.loopBtn)}.png',
                       width: 45.0,
                       height: 45.0,
                     ),
@@ -125,7 +128,7 @@ class _ButtomBarWidgetState extends State<ButtomBarWidget>{
                   fixedSize: Size(90.0, 90.0), // 버튼의 크기를 지정
                 ),
                 child:  Image.asset(
-                  'assets/icon/${context.select((TimeObserver t) => t.playBtn)}.png',
+                  'assets/icon/${context.select((TimeConfigListener t) => t.playBtn)}.png',
                   width: 120.0,
                   height: 120.0,
                 ),
@@ -137,20 +140,20 @@ class _ButtomBarWidgetState extends State<ButtomBarWidget>{
   }
 
   void _click(BuildContext context) {
-    var _isPlaying = !context.read<TimeObserver>().isPlaying;
+    var _isPlaying = !context.read<TimeConfigListener>().isPlaying;
 
     if(_isPlaying) {
-      context.read<TimeObserver>().isPlaying = true;
-      context.read<TimeObserver>().isPause = false;
-      context.read<TimeObserver>().ableEdit = false;
-      context.read<TimeObserver>().setPlayBtn = 'btm_pause';
+      context.read<TimeConfigListener>().isPlaying = true;
+      context.read<TimeConfigListener>().isPause = false;
+      context.read<TimeConfigListener>().ableEdit = false;
+      context.read<TimeConfigListener>().setPlayBtn = 'btm_pause';
 
       _start(context);
     } else {
-      context.read<TimeObserver>().isPlaying = false;
-      context.read<TimeObserver>().isPause = true;
-      context.read<TimeObserver>().ableEdit = true;
-      context.read<TimeObserver>().setPlayBtn = 'btm_play';
+      context.read<TimeConfigListener>().isPlaying = false;
+      context.read<TimeConfigListener>().isPause = true;
+      context.read<TimeConfigListener>().ableEdit = true;
+      context.read<TimeConfigListener>().setPlayBtn = 'btm_play';
 
       _pause();
     }
@@ -160,7 +163,7 @@ class _ButtomBarWidgetState extends State<ButtomBarWidget>{
   void _start(BuildContext context) {
     _timer = Timer.periodic(Duration(seconds: 1), (timer) {
       _time--;
-      context.read<TimeObserver>().setRemainTime = _time;
+      context.read<TimeConfigListener>().setRemainTime = _time;
     });
 
   }
@@ -172,9 +175,9 @@ class _ButtomBarWidgetState extends State<ButtomBarWidget>{
 
   // 초기화
   void _reset() {
-    context.read<TimeObserver>().setPlayBtn = 'btm_play';
-    context.read<TimeObserver>().isPlaying = false;
-    context.read<TimeObserver>().setRemainTime = 60;
+    context.read<TimeConfigListener>().setPlayBtn = 'btm_play';
+    context.read<TimeConfigListener>().isPlaying = false;
+    context.read<TimeConfigListener>().setRemainTime = 60;
 
     _timer?.cancel();
   }
