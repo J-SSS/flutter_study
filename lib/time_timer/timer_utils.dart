@@ -14,7 +14,7 @@ void showOverlayText(BuildContext context) {
 
   overlayEntry = OverlayEntry(
     builder: (context) => Positioned(
-      top: MediaQuery.of(context).size.height / 2 - 110.0,
+      top: MediaQuery.of(context).size.height / 2,
       left: MediaQuery.of(context).size.width / 2 - 50.0,
       child: Material(
         color: Colors.transparent,
@@ -31,7 +31,7 @@ void showOverlayText(BuildContext context) {
                   (TimeConfigListener t) => t.remainTime.toString() + " mins"),
               style: TextStyle(
                   color: Colors.white.withOpacity(0.5),
-                  fontSize: 30,
+                  fontSize: 25,
                   fontWeight: FontWeight.bold),
             ),
           ),

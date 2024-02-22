@@ -74,16 +74,47 @@ class MyTimeTimer extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Container(
+              // color: Colors.grey,
               child: Row(
-                children: [], // 시간 직접입력(손목시계 버튼), 테마버튼, 60min
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  TextButton(
+                      onPressed: () {},
+                      style: ElevatedButton.styleFrom(
+                        padding: EdgeInsets.all(10.0),
+                        fixedSize: Size(100.0, 50.0),
+                      ),
+                      child: Row(
+                        children: [
+                          // Icon(Icons.timer_outlined),
+                          Icon(Icons.hourglass_empty_sharp),
+                          Text(' 60 mins') // 누르면 다이어로그가 뜨면서 알람/타이머 및 목표시간/토탈타임 설정 할 수 있게
+                        ],
+                      )
+                      ),
+                  TextButton(
+                      onPressed: () {},
+                      style: ElevatedButton.styleFrom(
+                        padding: EdgeInsets.all(10.0),
+                        fixedSize: Size(100.0, 50.0),
+                      ),
+                      child: Icon(
+                        // Icons.screen_search_desktop_outlined,
+                        Icons.brush_outlined,
+                        color: Colors.deepPurpleAccent,
+                      )),
+                ],
               ),
+            ),
+            SizedBox(
+              height: 50,
             ),
             Stack(children: [
               pizzaTypeBase(),
               pizzaType(),
             ]),
             SizedBox(
-              height: 50,
+              height: 120,
             ),
             ButtomBarWidget()
           ],
@@ -173,7 +204,7 @@ class pizzaTypePainter extends CustomPainter {
     Paint paint = Paint()
       // ..color = Colors.red
       // ..color = Color(0xFF56B5B7) // 진한 민트
-      ..color = Color.fromRGBO(106,211,211, 1.0) // 민트
+      ..color = Color.fromRGBO(106, 211, 211, 1.0) // 민트
       ..style = PaintingStyle.fill; // 채우기로 변경
 
     double centerX = size.width / 2;

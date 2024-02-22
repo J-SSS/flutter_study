@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 
 // import 'package:flutter_study/screen/home_screen.dart';
 // import 'package:flutter_study/screen/home_screen2.dart';
-// import 'package:flutter_study/timer/timer_example.dart';
 // import 'package:flutter_study/study/provider.dart'; // 코딩셰프 Provider 입문 1&2
 
 
