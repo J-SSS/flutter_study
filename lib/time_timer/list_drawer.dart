@@ -15,7 +15,10 @@ class ListDrawer extends StatelessWidget {
             decoration: BoxDecoration(
               color: Colors.blue,
             ),
-            child: Text('Drawer Header'),
+            child: IconButton(
+              icon: Icon(Icons.settings),
+              onPressed: () {},
+            ),
           ),
           ListTile(
             title: Text('Item 1'),

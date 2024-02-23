@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'dart:math' as math;
 
@@ -10,7 +12,7 @@ import 'package:flutter_study/time_timer/list_drawer.dart';
 import 'package:flutter_study/time_timer/timer_utils.dart' as utils;
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key}); // 이유 찾아보기
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -27,96 +29,101 @@ class MyApp extends StatelessWidget {
 }
 
 class MyTimeTimer extends StatelessWidget {
+  // GlobalKey 생성
+  // final GlobalKey<_PizzaTypeState> pizzaTypeKey = GlobalKey<_PizzaTypeState>();
+
+
+
   @override
   Widget build(BuildContext context) {
+    late Size mainSize;
+    WidgetsBinding.instance?.addPostFrameCallback((_) {
+      context.read<AppConfigListener>().setMediaQuery = MediaQuery.of(context);
+      print('### 미디어쿼리 정보 ###');
+      print(MediaQuery.of(context));
+      print('### 미디어쿼리 정보 ###');
+
+      double painterSize = context.read<AppConfigListener>().painterSize;
+      mainSize = Size(painterSize,painterSize);
+    });
     return Scaffold(
       appBar: AppBar(
         // backgroundColor: Colors.green,
         title: Text('타이틀 들어갈 자리'),
-        // leading: Builder(
-        //   builder: (context) => IconButton(
-        //     icon: Icon(Icons.menu),
-        //     onPressed: () {
-        //       Scaffold.of(context).openEndDrawer();
-        //     },
-        //   ),
-        // ),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.settings),
-            onPressed: () {},
-          ),
-          PopupMenuButton<String>(
-            onSelected: (value) {
-              // 팝업 메뉴에서 선택된 항목에 대한 동작 수행
-              print('Selected: $value');
-            },
-            itemBuilder: (BuildContext context) => [
-              PopupMenuItem<String>(
-                value: 'item1',
-                child: Text('Item 1'),
-              ),
-              PopupMenuItem<String>(
-                value: 'item2',
-                child: Text('Item 2'),
-              ),
-              PopupMenuItem<String>(
-                value: 'item3',
-                child: Text('Item 3'),
-              ),
-            ],
-          ),
-        ],
+        toolbarHeight: MediaQuery.of(context).size.height / 10,
       ),
       drawer: ListDrawer(), // 보조 화면
       body: Center(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Container(
-              // color: Colors.grey,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  TextButton(
-                      onPressed: () {},
-                      style: ElevatedButton.styleFrom(
-                        padding: EdgeInsets.all(10.0),
-                        fixedSize: Size(100.0, 50.0),
-                      ),
-                      child: Row(
-                        children: [
-                          // Icon(Icons.timer_outlined),
-                          Icon(Icons.hourglass_empty_sharp),
-                          Text(' 60 mins') // 누르면 다이어로그가 뜨면서 알람/타이머 및 목표시간/토탈타임 설정 할 수 있게
-                        ],
-                      )
-                      ),
-                  TextButton(
-                      onPressed: () {},
-                      style: ElevatedButton.styleFrom(
-                        padding: EdgeInsets.all(10.0),
-                        fixedSize: Size(100.0, 50.0),
-                      ),
-                      child: Icon(
-                        // Icons.screen_search_desktop_outlined,
-                        Icons.brush_outlined,
-                        color: Colors.deepPurpleAccent,
-                      )),
-                ],
-              ),
-            ),
             SizedBox(
-              height: 50,
-            ),
-            Stack(children: [
-              pizzaTypeBase(),
-              pizzaType(),
-            ]),
+                height: MediaQuery.of(context).size.height * (6 / 10),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Row(
+                      // 60mins 라인
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        SizedBox(
+                          width: 10,
+                        ),
+                        Container(
+                          width: 105,
+                          height: 45,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(50.00),
+                            // 테두리 둥글기 설정
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black26.withOpacity(0.1),
+                                spreadRadius: 1,
+                                blurRadius: 5,
+                                offset: Offset(0, 3), // 음영의 위치 조절
+                              ),
+                            ],
+                          ),
+                          child: TextButton(
+                              onPressed: () {},
+                              child: Row(
+                                children: [
+                                  // Icon(Icons.timer_outlined),
+                                  Icon(Icons.hourglass_empty_sharp),
+                                  Text(
+                                    ' 60 mins',
+                                    style: TextStyle(fontSize: 14),
+                                  )
+                                  // 누르면 다이어로그가 뜨면서 알람/타이머 및 목표시간/토탈타임 설정 할 수 있게
+                                ],
+                              )),
+                        ),
+                      ],
+                    ),
+                    GestureDetector(
+                      onPanUpdate: (point) {
+                        utils.showOverlayText(context);
+                        Offset clickPoint = point.localPosition;
+                        int angleToMin =
+                            utils.angleToMin(clickPoint, Size(350,350));
+                        context.read<TimeConfigListener>().setSetupTime =
+                            angleToMin;
+                      },
+                      child: Stack(children: [
+                        PizzaTypeBase(size : Size(350,350)),
+                        PizzaType(size : Size(350,350),
+                          isOnTimer: false,
+                          setupTime:
+                              context.read<TimeConfigListener>().setupTime,
+                        ),
+                      ]),
+                    )
+                  ],
+                )),
             SizedBox(
-              height: 120,
+              height: MediaQuery.of(context).size.height * (2.6 / 10),
+              child: const ButtomBarWidget(),
             ),
-            ButtomBarWidget()
           ],
         ),
       ),
@@ -124,79 +131,63 @@ class MyTimeTimer extends StatelessWidget {
   }
 }
 
-class pizzaType extends StatefulWidget {
+class PizzaType extends StatefulWidget {
+  bool isOnTimer = false;
+  int setupTime;
+  Size size;
+
+  PizzaType({super.key,required this.size, required this.isOnTimer, required this.setupTime});
+
   @override
-  _pizzaTypeState createState() => _pizzaTypeState();
+  State<StatefulWidget> createState() {
+    return _PizzaTypeState();
+  }
 }
 
-class _pizzaTypeState extends State<pizzaType> {
-  Offset clickPoint = Offset(150.0, 150.0); // 초기값: 원의 중심
-  Size size = Size(350.0, 350.0);
+class _PizzaTypeState extends State<PizzaType> {
+  late Timer _timer;
+
+  _PizzaTypeState();
+
+  @override
+  void initState() {
+    if (widget.isOnTimer) {
+      _timer = Timer.periodic(Duration(seconds: 1), (timer) {
+        widget.setupTime -= 1;
+        if(widget.setupTime > -1){
+          setState(() { print('남은 시간 : ${widget.setupTime}'); });
+        } else {
+          _timer.cancel();
+        }
+      });
+    }
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    if (widget.isOnTimer) {
+      _timer.cancel();
+    }
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onPanUpdate: (details) {
-        utils.showOverlayText(context);
-
-        setState(() {
-          if (!context.read<TimeConfigListener>().isPlaying ||
-              context.read<TimeConfigListener>().isPause) {
-            clickPoint = details.localPosition;
-            context.read<TimeConfigListener>().ableEdit = true;
-          }
-        });
-
-        angleToMin(details.localPosition, size);
-      },
-      child: CustomPaint(
-        size: Size(350.0, 350.0), // 원하는 크기로 지정
-        painter: pizzaTypePainter(
-          context: context,
-          clickPoint: clickPoint,
-          remainTime: context.watch<TimeConfigListener>().remainTime,
-        ),
+    return CustomPaint(
+      size: widget.size, // 원하는 크기로 지정
+      painter: PizzaTypePainter(
+        angleToMin: widget.isOnTimer ? widget.setupTime : context.watch<TimeConfigListener>().setupTime,
       ),
     );
   }
-
-  // 클릭 위치를 1/60 시간 단위로 변환
-  void angleToMin(Offset clickPoint, Size size) {
-    var angleToMin;
-
-    double centerX = size.width / 2;
-    double centerY = size.height / 2;
-    double radius = size.width / 2;
-
-    double startAngle = -math.pi / 2; // 12시 방향에서 시작
-    double clickAngle =
-        math.atan2(clickPoint.dy - centerY, clickPoint.dx - centerX);
-    double sweepAngle;
-
-    if (clickAngle > -math.pi && clickAngle < startAngle) {
-      // 180 ~ -90(270)도
-      sweepAngle = 2 * math.pi + clickAngle - startAngle;
-    } else {
-      // -90 ~ 180도
-      sweepAngle = clickAngle - startAngle;
-    }
-
-    angleToMin = (sweepAngle / (2 * math.pi / 60)).floor();
-    angleToMin == 0 ? angleToMin = 60 : angleToMin;
-
-    context.read<TimeConfigListener>().setRemainTime = angleToMin;
-  }
 }
 
-class pizzaTypePainter extends CustomPainter {
-  final Offset clickPoint;
-  BuildContext context;
-  int? remainTime;
+class PizzaTypePainter extends CustomPainter {
+  int angleToMin;
 
-  pizzaTypePainter({
-    required this.context,
-    required this.clickPoint,
-    this.remainTime,
+  PizzaTypePainter({
+    required this.angleToMin,
   });
 
   @override
@@ -212,41 +203,8 @@ class pizzaTypePainter extends CustomPainter {
     double radius = size.width / 2;
 
     double startAngle = -math.pi / 2; // 12시 방향에서 시작
-    double clickAngle =
-        math.atan2(clickPoint.dy - centerY, clickPoint.dx - centerX);
-    double sweepAngle;
 
-    if (clickAngle > -math.pi && clickAngle < startAngle) {
-      // 180 ~ -90(270)도
-      sweepAngle = 2 * math.pi + clickAngle - startAngle;
-    } else {
-      // -90 ~ 180도
-      sweepAngle = clickAngle - startAngle;
-    }
-
-    var angleToMin = (sweepAngle / (2 * math.pi / 60)).floor();
-
-    // context.read<TimeConfigListener>().remainTime = angleToMin;
-    sweepAngle = (2 * math.pi) / 60 * angleToMin;
-
-    if (!context.read<TimeConfigListener>().ableEdit) {
-      if (context.read<TimeConfigListener>().isPlaying ||
-          context.read<TimeConfigListener>().isPause) {
-        final remainTime = this.remainTime;
-        if (remainTime != null) {
-          sweepAngle = (2 * math.pi) / 60 * remainTime;
-        }
-      }
-    }
-
-    // print(2 * math.pi/60); // 0.10471975511965977
-    // print(sweepAngle/(2 * math.pi/60));
-
-    // print('내림각도 : ${(sweepAngle/(2 * math.pi/60)).floor()}, 원본각도 : ${(sweepAngle/(2 * math.pi/60))}');
-    // print( '시작각 : ${startAngle} , 클릭각 : ${clickAngle}, 차이각 : ${sweepAngle}, 임시 : ${(math.pi/2-clickAngle)} ');
-
-    // print(clickPoint);
-    // print(clickPoint.direction);
+    var sweepAngle = (2 * math.pi) / 60 * angleToMin!;
 
     if (sweepAngle == 0.0 || sweepAngle == 2 * math.pi) {
       // 시간 꽉 채우는 경우
@@ -301,16 +259,22 @@ class pizzaTypePainter extends CustomPainter {
   }
 }
 
-class pizzaTypeBase extends StatefulWidget {
+class PizzaTypeBase extends StatefulWidget {
+  Size size;
+
+  PizzaTypeBase({required this.size});
+
   @override
-  _pizzaTypeStateBase createState() => _pizzaTypeStateBase();
+  State<StatefulWidget> createState() {
+    return _PizzaTypeStateBase();
+  }
 }
 
-class _pizzaTypeStateBase extends State<pizzaTypeBase> {
+class _PizzaTypeStateBase extends State<PizzaTypeBase> {
   @override
   Widget build(BuildContext context) {
     return CustomPaint(
-      size: Size(350.0, 350.0), // 원하는 크기로 지정
+      size: widget.size, // 원하는 크기로 지정
       painter: pizzaTypeBasePainter(
         context: context,
       ),
@@ -332,7 +296,7 @@ class pizzaTypeBasePainter extends CustomPainter {
       final Paint paint = Paint()..color = Colors.grey;
 
       if (angle % 30 == 0) {
-        paint..strokeWidth = 3.0;
+        paint..strokeWidth = 3.5;
         subRadius = 3;
       } else {
         paint..strokeWidth = 1.0;
@@ -341,8 +305,8 @@ class pizzaTypeBasePainter extends CustomPainter {
 
       final double radians = angle * (math.pi / 180); // 각도를 라디안으로 변환
 
-      final double startX = size.width / 2 + (radius - 4) * math.cos(radians);
-      final double startY = size.height / 2 + (radius - 4) * math.sin(radians);
+      final double startX = size.width / 2 + (radius - 8) * math.cos(radians);
+      final double startY = size.height / 2 + (radius - 8) * math.sin(radians);
 
       final double endX =
           size.width / 2 + (radius + subRadius + 4) * math.cos(radians);

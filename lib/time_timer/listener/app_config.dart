@@ -1,8 +1,25 @@
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 
 class AppConfigListener with ChangeNotifier {
+  BuildContext? context;
+
+  late MediaQueryData mediaQuery;
+  late double painterSize;
+
+  set setMediaQuery(MediaQueryData mediaQuery){
+    this.mediaQuery = mediaQuery;
+
+    if(mediaQuery.orientation.toString() == 'portrait'){
+      this.painterSize = mediaQuery.size.width * 0.85;
+    } else {
+      this.painterSize = mediaQuery.size.height * 0.85;
+    }
+
+  }
+
   /*
   - 남은 시간 표시 여부
   - 초침 표시

@@ -5,7 +5,7 @@ import 'package:provider/provider.dart';
 class TimeConfigListener with ChangeNotifier {
   String timeType = 'M'; // min : 분, sec : 초
 
-  int remainTime = 60;
+  int setupTime = 34;
   bool isPlaying = false;
   bool isPause = false;
   bool ableEdit = false;
@@ -18,8 +18,8 @@ class TimeConfigListener with ChangeNotifier {
     notifyListeners();
   }
 
-  set setRemainTime(int remainTime) {
-    this.remainTime = remainTime;
+  set setSetupTime(int setupTime) {
+    this.setupTime = setupTime;
     notifyListeners();
   }
 

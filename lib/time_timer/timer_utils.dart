@@ -8,6 +8,42 @@ import 'package:flutter_study/time_timer/base_timer.dart';
 import 'package:flutter_study/time_timer/listener/app_config.dart';
 import 'package:flutter_study/time_timer/listener/time_config.dart';
 
+/** 원형 타입에서 클릭 위치를 1/60 시간 단위로 변환 */
+int angleToMin(Offset clickPoint, Size size) {
+  int angleToMin;
+
+  double centerX = size.width / 2;
+  double centerY = size.height / 2;
+  double radius = size.width / 2;
+
+  double startAngle = -math.pi / 2; // 12시 방향에서 시작
+  double clickAngle =
+  math.atan2(clickPoint.dy - centerY, clickPoint.dx - centerX);
+  double sweepAngle;
+
+  // print(2 * math.pi/60); // 0.10471975511965977
+  // print(sweepAngle/(2 * math.pi/60));
+
+  // print('내림각도 : ${(sweepAngle/(2 * math.pi/60)).floor()}, 원본각도 : ${(sweepAngle/(2 * math.pi/60))}');
+  // print( '시작각 : ${startAngle} , 클릭각 : ${clickAngle}, 차이각 : ${sweepAngle}, 임시 : ${(math.pi/2-clickAngle)} ');
+
+  // print(clickPoint);
+  // print(clickPoint.direction);
+
+  if (clickAngle > -math.pi && clickAngle < startAngle) {
+    // 180 ~ -90(270)도
+    sweepAngle = 2 * math.pi + clickAngle - startAngle;
+  } else {
+    // -90 ~ 180도
+    sweepAngle = clickAngle - startAngle;
+  }
+
+  angleToMin = (sweepAngle / (2 * math.pi / 60)).floor();
+  angleToMin == 0 ? angleToMin = 60 : angleToMin;
+
+  return angleToMin;
+}
+
 /** 설정한 시간을 Overlay 위젯으로 표시 */
 void showOverlayText(BuildContext context) {
   OverlayEntry overlayEntry;
@@ -28,7 +64,7 @@ void showOverlayText(BuildContext context) {
           child: Center(
             child: Text(
               context.select(
-                  (TimeConfigListener t) => t.remainTime.toString() + " mins"),
+                  (TimeConfigListener t) => t.setupTime.toString() + " mins"),
               style: TextStyle(
                   color: Colors.white.withOpacity(0.5),
                   fontSize: 25,
@@ -135,3 +171,65 @@ void showOverlayBottomBar(BuildContext context) {
 //         },
 //       );
 //     }).toList()),
+
+// // 제네릭 함수를 사용하여 특정 타입의 위젯을 찾기
+// T? findWidgetByKey<T>(BuildContext context, Key key) {
+//   return context.findAncestorWidgetOfExactType<T>();
+// }
+
+
+
+
+//   final customTimer = CustomTimer(duration: Duration(seconds: 5));
+//
+//   customTimer.start();
+//
+//   // 3초 후에 타이머 일시 정지
+//   Future.delayed(Duration(seconds: 3), () {
+//     customTimer.pause();
+//     print('Timer paused at 3 seconds');
+//   });
+//
+//   // 6초 후에 타이머 재개
+//   Future.delayed(Duration(seconds: 6), () {
+//     customTimer.resume();
+//     print('Timer resumed at 6 seconds');
+//   });
+// }
+
+/** 베이스 타이머 */
+class BaseTimer {
+  final Duration duration;
+  late StreamController<int> _controller;
+  late StreamSubscription<int> _subscription;
+
+  BaseTimer({required this.duration}) {
+    _controller = StreamController<int>();
+    _subscription = _controller.stream.listen((event) {
+      print('Timer tick: $event');
+    });
+  }
+
+  void start() {
+    int tick = 0;
+    Timer.periodic(Duration(seconds: 1), (timer) {
+      tick++;
+      _controller.add(tick);
+      if (tick == duration.inSeconds) {
+        timer.cancel();
+      }
+    });
+  }
+
+  void pause() {
+    _subscription.pause();
+  }
+
+  void resume() {
+    _subscription.resume();
+  }
+}
+
+/** 미디어쿼리 너비,높이 */
+double mediaWidth(BuildContext context, double scale) => MediaQuery.of(context).size.width * scale;
+double mediaHeight(BuildContext context, double scale) => MediaQuery.of(context).size.height * scale;

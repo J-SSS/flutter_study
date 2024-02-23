@@ -24,58 +24,58 @@ class _ButtomBarWidgetState extends State<ButtomBarWidget>{
   Widget build(BuildContext context) {
     return Stack(
       children: <Widget>[
-        Container(
-          width: 350,
+        SizedBox( /** 배경 영역 */
+          width: 300,
           height: 150,
         ),
-        Positioned(
-            left : 130,
+        Positioned( /** 상단 반원 영역 */
+            left : 105,
             top: 5,
             child: Container(
               width: 100,
               height: 100,
               decoration: BoxDecoration(
                 color: Colors.white,
-                borderRadius: BorderRadius.circular(50.00), // 테두리 둥글기 설정
+                borderRadius: BorderRadius.circular(50.00),
                 boxShadow: [
                   BoxShadow(
                     color: Colors.black26.withOpacity(0.1),
                     spreadRadius: 1,
                     blurRadius: 1,
-                    offset: Offset(0, -0), // 음영의 위치 조절
+                    offset: Offset(0, -0),
                   ),
                 ],
               ),
             )
         ),
-        Positioned(
+        Positioned( /** 하단 사각 영역 */
           top: 50,
           child:  Container(
-              width: 350,
+              width: 300,
               height: 80,
               decoration: BoxDecoration(
                 color: Colors.white,
-                borderRadius: BorderRadius.circular(50.00), // 테두리 둥글기 설정
+                borderRadius: BorderRadius.circular(50.00),
                 boxShadow: [
                   BoxShadow(
                     color: Colors.black26.withOpacity(0.1),
                     spreadRadius: 1,
                     blurRadius: 5,
-                    offset: Offset(0, 3), // 음영의 위치 조절
+                    offset: Offset(0, 3),
                   ),
                 ],
               ),
               child : Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround, // 간격을 균등하게 배치
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
-                  TextButton(
+                  TextButton( /** 좌버튼 */
                     onPressed: () {
                       _reset();
                     },
                     style: ElevatedButton.styleFrom(
-                      shape: CircleBorder(), // 동그란 모양을 지정
-                      padding: EdgeInsets.all(10.0), // 아이콘과 버튼의 경계
-                      fixedSize: Size(70.0, 70.0), // 버튼의 크기를 지정
+                      shape: CircleBorder(),
+                      padding: EdgeInsets.all(10.0),
+                      fixedSize: Size(70.0, 70.0),
                     ),
                     child:  Image.asset(
                       'assets/icon/btm_reset.png',
@@ -84,14 +84,14 @@ class _ButtomBarWidgetState extends State<ButtomBarWidget>{
                     ),
                   ),
                   SizedBox(width: 100,),
-                  TextButton(
+                  TextButton( /** 우버튼 */
                     onPressed: () {
                       context.read<TimeConfigListener>().setLoopBtn = 'set';
                     },
                     style: ElevatedButton.styleFrom(
-                      shape: CircleBorder(), // 동그란 모양을 지정
-                      padding: EdgeInsets.all(10.0), // 아이콘과 버튼의 경계
-                      fixedSize: Size(70.0, 70.0), // 버튼의 크기를 지정
+                      shape: CircleBorder(),
+                      padding: EdgeInsets.all(10.0),
+                      fixedSize: Size(70.0, 70.0),
                     ),
                     child:  Image.asset(
                       'assets/icon/${context.select((TimeConfigListener t) => t.loopBtn)}.png',
@@ -103,15 +103,15 @@ class _ButtomBarWidgetState extends State<ButtomBarWidget>{
               )
           ),
         ),
-        Positioned(
-            left : 135,
+        Positioned( /** 재생버튼 */
+            left : 110,
             top: 10,
             child: Container(
               width: 90,
               height: 90,
               decoration: BoxDecoration(
                 color: Colors.white,
-                borderRadius: BorderRadius.circular(50.00), // 테두리 둥글기 설정
+                borderRadius: BorderRadius.circular(50.00),
               ),
               child: TextButton(
                 onPressed: () {
@@ -123,9 +123,9 @@ class _ButtomBarWidgetState extends State<ButtomBarWidget>{
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.white,
-                  shape: CircleBorder(), // 동그란 모양을 지정
-                  padding: EdgeInsets.all(10.0), // 아이콘과 버튼의 경계
-                  fixedSize: Size(90.0, 90.0), // 버튼의 크기를 지정
+                  shape: CircleBorder(),
+                  padding: EdgeInsets.all(10.0),
+                  fixedSize: Size(90.0, 90.0),
                 ),
                 child:  Image.asset(
                   'assets/icon/${context.select((TimeConfigListener t) => t.playBtn)}.png',
@@ -163,7 +163,7 @@ class _ButtomBarWidgetState extends State<ButtomBarWidget>{
   void _start(BuildContext context) {
     _timer = Timer.periodic(Duration(seconds: 1), (timer) {
       _time--;
-      context.read<TimeConfigListener>().setRemainTime = _time;
+      context.read<TimeConfigListener>().setSetupTime = _time;
     });
 
   }
@@ -177,7 +177,7 @@ class _ButtomBarWidgetState extends State<ButtomBarWidget>{
   void _reset() {
     context.read<TimeConfigListener>().setPlayBtn = 'btm_play';
     context.read<TimeConfigListener>().isPlaying = false;
-    context.read<TimeConfigListener>().setRemainTime = 60;
+    context.read<TimeConfigListener>().setSetupTime = 60;
 
     _timer?.cancel();
   }
