@@ -3,10 +3,11 @@ import 'dart:async';
 import 'dart:math' as math;
 import 'package:provider/provider.dart';
 import 'package:flutter_study/time_timer/base_timer.dart';
-import 'package:flutter_study/time_timer/on_timer.dart' as onTimer;
+import 'package:flutter_study/time_timer/screen/on_timer_screen.dart' as on_timer_screen;
+import 'package:flutter_study/time_timer/screen/theme_screen.dart' as theme_screen;
 
-import 'package:flutter_study/time_timer/listener/app_config.dart';
-import 'package:flutter_study/time_timer/listener/time_config.dart';
+import 'package:flutter_study/time_timer/utils/app_config.dart';
+import 'package:flutter_study/time_timer/utils/time_config.dart';
 
 class ButtomBarWidget extends StatefulWidget{
   const ButtomBarWidget({super.key});
@@ -70,7 +71,11 @@ class _ButtomBarWidgetState extends State<ButtomBarWidget>{
                 children: [
                   TextButton( /** 좌버튼 */
                     onPressed: () {
-                      _reset();
+                      // _reset();
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => theme_screen.ThemeScreen()),
+                      );
                     },
                     style: ElevatedButton.styleFrom(
                       shape: CircleBorder(),
@@ -118,7 +123,7 @@ class _ButtomBarWidgetState extends State<ButtomBarWidget>{
                   // _click(context);
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => onTimer.OnTimerScreen()),
+                    MaterialPageRoute(builder: (context) => on_timer_screen.OnTimerScreen()),
                   );
                 },
                 style: ElevatedButton.styleFrom(

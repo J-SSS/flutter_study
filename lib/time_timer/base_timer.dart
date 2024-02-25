@@ -6,10 +6,10 @@ import 'dart:math' as math;
 import 'package:provider/provider.dart';
 
 import 'package:flutter_study/time_timer/bottom_bar.dart';
-import 'package:flutter_study/time_timer/listener/app_config.dart';
-import 'package:flutter_study/time_timer/listener/time_config.dart';
+import 'package:flutter_study/time_timer/utils/app_config.dart';
+import 'package:flutter_study/time_timer/utils/time_config.dart';
 import 'package:flutter_study/time_timer/list_drawer.dart';
-import 'package:flutter_study/time_timer/timer_utils.dart' as utils;
+import 'package:flutter_study/time_timer/utils/timer_utils.dart' as utils;
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});

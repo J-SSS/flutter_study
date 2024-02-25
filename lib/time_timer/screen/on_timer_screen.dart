@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_study/time_timer/base_timer.dart';
-import 'package:flutter_study/time_timer/timer_utils.dart' as utils;
+import 'package:flutter_study/time_timer/utils/timer_utils.dart' as utils;
 import 'package:provider/provider.dart';
 
-import 'listener/time_config.dart';
+import '../utils/time_config.dart';
 
 class OnTimerScreen extends StatelessWidget {
   @override
