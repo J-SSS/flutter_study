@@ -6,8 +6,8 @@ import 'dart:math' as math;
 import 'package:provider/provider.dart';
 
 import 'package:flutter_study/time_timer/bottom_bar.dart';
-import 'package:flutter_study/time_timer/utils/app_config.dart';
-import 'package:flutter_study/time_timer/utils/time_config.dart';
+import 'package:flutter_study/time_timer/provider/app_config.dart';
+import 'package:flutter_study/time_timer/provider/time_config.dart';
 import 'package:flutter_study/time_timer/list_drawer.dart';
 import 'package:flutter_study/time_timer/utils/timer_utils.dart' as utils;
 
@@ -22,6 +22,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (context) => AppConfigListener()),
       ],
       child: MaterialApp(
+        title: 'My Time Timer',
         home: MyTimeTimer(),
       ),
     );
@@ -41,7 +42,6 @@ class MyTimeTimer extends StatelessWidget {
       context.read<AppConfigListener>().setMediaQuery = MediaQuery.of(context);
       print('### 미디어쿼리 정보 ###');
       print(MediaQuery.of(context));
-      print('### 미디어쿼리 정보 ###');
 
       double painterSize = context.read<AppConfigListener>().painterSize;
       mainSize = Size(painterSize,painterSize);
@@ -50,78 +50,38 @@ class MyTimeTimer extends StatelessWidget {
       appBar: AppBar(
         // backgroundColor: Colors.green,
         title: Text('타이틀 들어갈 자리'),
+        centerTitle: true,
         toolbarHeight: MediaQuery.of(context).size.height / 10,
       ),
       drawer: ListDrawer(), // 보조 화면
       body: Center(
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             SizedBox(
                 height: MediaQuery.of(context).size.height * (6 / 10),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Row(
-                      // 60mins 라인
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        SizedBox(
-                          width: 10,
-                        ),
-                        Container(
-                          width: 105,
-                          height: 45,
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(50.00),
-                            // 테두리 둥글기 설정
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black26.withOpacity(0.1),
-                                spreadRadius: 1,
-                                blurRadius: 5,
-                                offset: Offset(0, 3), // 음영의 위치 조절
-                              ),
-                            ],
-                          ),
-                          child: TextButton(
-                              onPressed: () {},
-                              child: Row(
-                                children: [
-                                  // Icon(Icons.timer_outlined),
-                                  Icon(Icons.hourglass_empty_sharp),
-                                  Text(
-                                    ' 60 mins',
-                                    style: TextStyle(fontSize: 14),
-                                  )
-                                  // 누르면 다이어로그가 뜨면서 알람/타이머 및 목표시간/토탈타임 설정 할 수 있게
-                                ],
-                              )),
-                        ),
-                      ],
+                child: Center(child:  GestureDetector(
+                  onPanUpdate: (point) {
+                    utils.showOverlayText(context);
+                    Offset clickPoint = point.localPosition;
+                    int angleToMin =
+                    utils.angleToMin(clickPoint, Size(350,350));
+                    context.read<TimeConfigListener>().setSetupTime =
+                        angleToMin;
+                  },
+                  child: Stack(children: [
+                    PizzaTypeBase(size : Size(350,350)),
+                    PizzaType(size : Size(350,350),
+                      isOnTimer: false,
+                      setupTime:
+                      context.read<TimeConfigListener>().setupTime,
                     ),
-                    GestureDetector(
-                      onPanUpdate: (point) {
-                        utils.showOverlayText(context);
-                        Offset clickPoint = point.localPosition;
-                        int angleToMin =
-                            utils.angleToMin(clickPoint, Size(350,350));
-                        context.read<TimeConfigListener>().setSetupTime =
-                            angleToMin;
-                      },
-                      child: Stack(children: [
-                        PizzaTypeBase(size : Size(350,350)),
-                        PizzaType(size : Size(350,350),
-                          isOnTimer: false,
-                          setupTime:
-                              context.read<TimeConfigListener>().setupTime,
-                        ),
-                      ]),
-                    )
-                  ],
-                )),
+                  ]),
+                ),)
+
+            ),
             SizedBox(
-              height: MediaQuery.of(context).size.height * (2.6 / 10),
+              height: MediaQuery.of(context).size.height * (2.0 / 10),
               child: const ButtomBarWidget(),
             ),
           ],
