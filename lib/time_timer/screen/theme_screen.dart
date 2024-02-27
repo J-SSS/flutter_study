@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_study/time_timer/base_timer.dart';
 import 'package:flutter_study/time_timer/utils/timer_utils.dart' as utils;
+import 'package:flutter_study/time_timer/widgets/pizza_type.dart';
 import 'package:flutter_study/time_timer/screen/select_item_screen.dart' as select_item_screen;
-import 'package:flutter_study/time_timer/utils/shared_preferences.dart';
 import 'package:provider/provider.dart';
 
 import '../provider/time_config.dart';

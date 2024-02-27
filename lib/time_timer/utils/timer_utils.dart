@@ -84,51 +84,6 @@ void showOverlayText(BuildContext context) {
   });
 }
 
-/** OnTimer 화면에서 바텀 바를 Overlay위젯으로 표시 */
-void showOverlayBottomBar(BuildContext context) {
-  OverlayEntry overlayEntry;
-
-  overlayEntry = OverlayEntry(
-    builder: (context) => Positioned(
-      top: MediaQuery.of(context).size.height - 100.0,
-      left: MediaQuery.of(context).size.width / 2 - 50.0,
-      child: Material(
-        color: Colors.transparent,
-        child: Container(
-          child: Center(
-            child: TextButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.white,
-                shape: CircleBorder(), // 동그란 모양을 지정
-                padding: EdgeInsets.all(10.0), // 아이콘과 버튼의 경계
-                fixedSize: Size(90.0, 90.0), // 버튼의 크기를 지정
-              ),
-              child: Image.asset(
-                // 'assets/icon/${context.select((TimeObserver t) => t.playBtn)}.png',
-                'assets/icon/btm_play.png',
-                width: 120.0,
-                height: 120.0,
-              ),
-            ),
-          ),
-        ),
-      ),
-    ),
-  );
-
-  Overlay.of(context).insert(overlayEntry);
-  // Overlay.of(context).
-  // print
-
-  // 1초 후에 OverlayEntry를 제거하여 텍스트를 사라지게 함
-  Future.delayed(Duration(milliseconds: 1500), () {
-    overlayEntry.remove();
-  });
-}
-
 // CarouselSlider(
 //     options: CarouselOptions(
 //       height: 500,

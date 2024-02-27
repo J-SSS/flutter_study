@@ -10,6 +10,8 @@ class TimeConfigListener with ChangeNotifier {
   bool isPause = false;
   bool ableEdit = false;
 
+  Offset clickPoint = Offset(0,0);
+
   var playBtn = 'btm_play';
   var loopBtn = 'btm_roop_1';
 
@@ -20,6 +22,11 @@ class TimeConfigListener with ChangeNotifier {
 
   set setSetupTime(int setupTime) {
     this.setupTime = setupTime;
+    notifyListeners();
+  }
+
+  set setClickPoint(Offset clickPoint) {
+    this.clickPoint = clickPoint;
     notifyListeners();
   }
 

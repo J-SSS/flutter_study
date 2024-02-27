@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 // import 'package:flutter_study/screen/home_screen.dart';
 // import 'package:flutter_study/screen/home_screen2.dart';
@@ -17,8 +18,13 @@ import 'package:flutter_study/time_timer/base_timer.dart';
   3. MaterialApp + scaffold가 가장 기본적인 설정
   4. 앱바 : 상단바 위젯, 스낵바 : 알림창 위젯
  */
-void main() {
-  runApp(MyApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized(); // jdi 찾아보기 : 비동기 환경에서 초기화를 보장한다?
+  final prefs = await SharedPreferences.getInstance();
+  runApp(MyApp(prefs: prefs));
+
+
+  // runApp(MyApp());
 
   // runApp(SplashScreen());
 
