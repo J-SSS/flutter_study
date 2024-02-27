@@ -43,9 +43,13 @@ class MyApp extends StatelessWidget {
 class MyTimeTimer extends StatelessWidget {
   // GlobalKey 생성
   // final GlobalKey<_PizzaTypeState> pizzaTypeKey = GlobalKey<_PizzaTypeState>();
+  late MediaQueryData mediaQueryData;
+  late Size mediaSize;
 
   @override
   Widget build(BuildContext context) {
+    mediaQueryData = MediaQuery.of(context);
+    mediaSize = mediaQueryData.size;
     late Size mainSize;
     Offset clickPoint = Offset(150, -150);
     WidgetsBinding.instance?.addPostFrameCallback((_) {
@@ -95,20 +99,20 @@ class MyTimeTimer extends StatelessWidget {
                     onPanUpdate: (point) {
                       // utils.showOverlayText(context);
 
-                      Rect.fromPoints(point.globalPosition, point.globalPosition);
                       clickPoint = point.localPosition;
+                      context.read<TimeConfigListener>().setClickPoint =
+                          clickPoint;
+
                       int angleToMin =
                       utils.angleToMin(clickPoint, Size(350, 350));
                       context.read<TimeConfigListener>().setSetupTime =
                           angleToMin;
-                      context.read<TimeConfigListener>().setClickPoint =
-                          clickPoint;
                     },
                     child: Stack(children: [
                       // BatteryType(clickPoint: clickPoint)
-                      BatteryTypeBase(size: Size(350, 350)),
+                      BatteryTypeBase(size: Size(mediaSize.width, mediaSize.height)),
                       BatteryType(
-                        size: Size(350, 350),
+                        size: Size(mediaSize.width, mediaSize.height),
                         isOnTimer: false,
                         setupTime: context.read<TimeConfigListener>().setupTime,
                       clickPoint: context.read<TimeConfigListener>().clickPoint

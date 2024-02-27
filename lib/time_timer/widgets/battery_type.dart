@@ -74,6 +74,7 @@ class BatteryTypePainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     Paint paint = Paint()
+      // ..color = Colors.red
       ..color = Colors.greenAccent
       ..style = PaintingStyle.fill; // 채우기로 변경
 
@@ -84,22 +85,43 @@ class BatteryTypePainter extends CustomPainter {
     // print(clickPoint);
     double rectSize = 50.0;
     // print(clickPoint.dx);
-    print(clickPoint.dy.floor() / 60);
+    // print(clickPoint.dy.floor() / 60);
 
     int clickToMin = ((400 - clickPoint.dy.floor())/400 * 60).floor();
+    double width = size.width;
+
+    if(clickToMin <= 15){
+      paint.color = Colors.red;
+    } else if (clickToMin <= 30) {
+      paint.color = Colors.orange;
+    } else if (clickToMin <= 60) {
+      paint.color = Colors.greenAccent;
+    }
 
 
     double dy = clickPoint.dy;
     int intDy = dy.floor();
+    double radius = 20.0;
+    double innerRadius = 10.0;
+    Rect rect;
+    RRect rRect;
+    print(size.height); // 500??
+
+
 
     if(intDy >= 0){
-      canvas.drawRect(Rect.fromLTRB(50, dy.roundToDouble(), 300, 400), paint);
+      rect  = Rect.fromLTRB(75, dy, width-75, size.height - 40);
+      rRect = RRect.fromRectAndCorners(rect,
+    bottomLeft: Radius.circular(innerRadius), bottomRight: Radius.circular(innerRadius));
+      canvas.drawRRect(rRect, paint);
     } else {
-      canvas.drawRect(Rect.fromLTRB(50, 0, 300, 400), paint);
+      rect  = Rect.fromLTRB(75, 40, width-75, size.height - 40);
+      rRect = RRect.fromRectAndRadius(rect, Radius.circular(innerRadius));
+      canvas.drawRRect(rRect, paint);
     }
 
-    for(double i = 0 ; i < 400 ; i+=80){
-      canvas.drawRect(Rect.fromLTRB(50, i+5, 300, i), paint2);
+    for(double i = 40 ; i < 460 ; i+=43){
+      canvas.drawRect(Rect.fromLTRB(75, i+5, width-75, i), paint2);
     }
     }
 
@@ -148,13 +170,35 @@ class BatteryTypeBasePainter extends CustomPainter {
       ..color = Colors.greenAccent
       ..style = PaintingStyle.fill; // 채우기로 변경
 
-    Paint paint2 = Paint()
-      ..color = Colors.black12
+    // 몸통
+     Paint paint2 = Paint()
+      ..color = Colors.grey
       ..style = PaintingStyle.stroke
-    ..strokeWidth = 10.0;
+    ..strokeWidth = 15.0;
+
+    // 뚜껑
+    Paint paint3 = Paint()
+      ..color = Colors.grey
+      ..style = PaintingStyle.fill;
 
 
-    canvas.drawRect(Rect.fromLTRB(35, 10, 315, 350), paint2);
+    double width = size.width;
+
+    Rect rect = Rect.fromLTRB(60, 30, width-60, size.height * 0.95);
+    double radius = 20.0; // 원하는 둥근 모서리 반지름
+
+    RRect rRect = RRect.fromRectAndRadius(rect, Radius.circular(radius));
+
+    canvas.drawRRect(rRect, paint2);
+
+    Rect rectHead = Rect.fromLTRB(150, 0, width-150, 30);
+
+    canvas.drawRect(rectHead, paint3);
+
+
+
+
+
 
   }
 
