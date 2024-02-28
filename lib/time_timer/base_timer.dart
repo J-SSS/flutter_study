@@ -50,6 +50,7 @@ class MyTimeTimer extends StatelessWidget {
   Widget build(BuildContext context) {
     mediaQueryData = MediaQuery.of(context);
     mediaSize = mediaQueryData.size;
+    print(mediaSize);
     late Size mainSize;
     Offset clickPoint = Offset(150, -150);
     WidgetsBinding.instance?.addPostFrameCallback((_) {
@@ -64,7 +65,7 @@ class MyTimeTimer extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         // backgroundColor: Colors.green,
-        title: Text('타이틀 들어갈 자리'),
+        title: Text('My Time Timer'),
         centerTitle: true,
         toolbarHeight: MediaQuery.of(context).size.height / 10,
       ),

@@ -74,21 +74,35 @@ class BatteryTypePainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     Paint paint = Paint()
-      // ..color = Colors.red
       ..color = Colors.greenAccent
-      ..style = PaintingStyle.fill; // 채우기로 변경
+      ..style = PaintingStyle.fill;
 
-    Paint paint2 = Paint()
+    Paint paint2 = Paint() // 구분선용
       ..color = Colors.white
-      ..style = PaintingStyle.fill; // 채우기로 변경
+      ..style = PaintingStyle.fill;
 
-    // print(clickPoint);
-    double rectSize = 50.0;
-    // print(clickPoint.dx);
-    // print(clickPoint.dy.floor() / 60);
+    double sizeH = size.height;
+    double sizeW = size.width;
 
-    int clickToMin = ((400 - clickPoint.dy.floor())/400 * 60).floor();
+    double strokeW = (sizeH * 0.03).floorToDouble(); // 선 굵기 3프로
+    double paddingL = (sizeH * 0.15).floorToDouble(); // 시간 부분 패딩 사이즈
+    double paddingHeadL = (sizeH * 0.30).floorToDouble(); // +극 부분 패딩 사이즈
+    double paddingBaseL = paddingL-strokeW; // 테두리 부분 패딩 사이즈
+
+    double lineH = (sizeH * 0.015).floorToDouble(); // 구분선은 외곽선의 절반?
+
+    double netH = sizeH - (strokeW * 2.5); // 배경 여백 밑 테두리 제외한 높이 좌표
+    double netLength = sizeH - (strokeW * 5); // 상, 하 여백 밑 테두리 제외한 빈공간 절대높이
+
+
     double width = size.width;
+    // double radius = strokeW; // 원하는 둥근 모서리 반지름
+
+    int clickToMin = ((netH - clickPoint.dy)/netLength * 60).floor();
+
+    print('네트높이 : ${netLength}, 시간 : ${clickToMin}, 클릭Y : ${clickPoint.dy}, 최대좌표 : ${netH}, 상단여백 : ${strokeW*2.5}');
+
+    // 10등분을 하려면 여백선은 11개가 필요하다
 
     if(clickToMin <= 15){
       paint.color = Colors.red;
@@ -99,30 +113,34 @@ class BatteryTypePainter extends CustomPainter {
     }
 
 
+
+
     double dy = clickPoint.dy;
     int intDy = dy.floor();
     double radius = 20.0;
     double innerRadius = 10.0;
     Rect rect;
     RRect rRect;
-    print(size.height); // 500??
+    // print(size); // 500??
+    // print(size.height); // 500??
 
 
 
     if(intDy >= 0){
-      rect  = Rect.fromLTRB(75, dy, width-75, size.height - 40);
-      rRect = RRect.fromRectAndCorners(rect,
-    bottomLeft: Radius.circular(innerRadius), bottomRight: Radius.circular(innerRadius));
+      rect  = Rect.fromLTRB(paddingL, dy, width-paddingL, netH - lineH);
+      RRect rRect = RRect.fromRectAndRadius(rect, Radius.circular(radius));
+    //   rRect = RRect.fromRectAndCorners(rect,
+    // bottomLeft: Radius.circular(innerRadius), bottomRight: Radius.circular(innerRadius));
       canvas.drawRRect(rRect, paint);
     } else {
-      rect  = Rect.fromLTRB(75, 40, width-75, size.height - 40);
+      rect  = Rect.fromLTRB(paddingL, lineH, width-paddingL, netH - lineH);
       rRect = RRect.fromRectAndRadius(rect, Radius.circular(innerRadius));
       canvas.drawRRect(rRect, paint);
     }
 
-    for(double i = 40 ; i < 460 ; i+=43){
-      canvas.drawRect(Rect.fromLTRB(75, i+5, width-75, i), paint2);
-    }
+    // for(double i = 40 ; i < 460 ; i+=43){
+    //   canvas.drawRect(Rect.fromLTRB(75, i+5, width-75, i), paint2);
+    // }
     }
 
 
@@ -163,46 +181,42 @@ class _BatteryTypeBaseState extends State<BatteryTypeBase> {
 }
 
 class BatteryTypeBasePainter extends CustomPainter {
+  final Color _color = Colors.grey;
 
   @override
   void paint(Canvas canvas, Size size) {
-    Paint paint = Paint()
-      ..color = Colors.greenAccent
-      ..style = PaintingStyle.fill; // 채우기로 변경
+    Paint paintBody = Paint()
+      ..color = _color
+      ..style = PaintingStyle.stroke;
 
-    // 몸통
-     Paint paint2 = Paint()
-      ..color = Colors.grey
-      ..style = PaintingStyle.stroke
-    ..strokeWidth = 15.0;
-
-    // 뚜껑
-    Paint paint3 = Paint()
-      ..color = Colors.grey
+    Paint paintHead = Paint()
+      ..color = _color
       ..style = PaintingStyle.fill;
 
+    double sizeH = size.height;
+    double sizeW = size.width;
+
+    double strokeW = (sizeH * 0.03).floorToDouble(); // 선 굵기 3프로
+    double paddingL = (sizeH * 0.15).floorToDouble(); // 시간 부분 패딩 사이즈
+    double paddingHeadL = (sizeH * 0.30).floorToDouble(); // +극 부분 패딩 사이즈
+    double paddingBaseL = paddingL-strokeW; // 테두리 부분 패딩 사이즈
 
     double width = size.width;
+    double radius = strokeW; // 원하는 둥근 모서리 반지름
 
-    Rect rect = Rect.fromLTRB(60, 30, width-60, size.height * 0.95);
-    double radius = 20.0; // 원하는 둥근 모서리 반지름
+    /**
+     * 선 굵기 : 세로 길이의 3프로
+     * 테두리 패딩 + 선굵기 = 시간 부분 패딩
+     * +극 부분은 선 굵기의 2배 높이, 배터리 하단에도 같은 만큼의 여유 공간을 부여한다
+     */
 
+    Rect rect = Rect.fromLTRB(paddingBaseL, strokeW * 2, width-paddingBaseL, size.height - strokeW * 2);
     RRect rRect = RRect.fromRectAndRadius(rect, Radius.circular(radius));
+    Rect rectHead = Rect.fromLTRB(paddingHeadL, 0, width-paddingHeadL, strokeW * 2);
 
-    canvas.drawRRect(rRect, paint2);
-
-    Rect rectHead = Rect.fromLTRB(150, 0, width-150, 30);
-
-    canvas.drawRect(rectHead, paint3);
-
-
-
-
-
-
+    canvas.drawRRect(rRect, paintBody..strokeWidth = strokeW);
+    canvas.drawRect(rectHead, paintHead);
   }
-
-
 
   @override
   bool shouldRepaint(CustomPainter oldDelegate) {
