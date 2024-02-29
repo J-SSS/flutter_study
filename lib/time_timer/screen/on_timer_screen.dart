@@ -103,7 +103,7 @@ class _onTimerBottomBarState extends State<OnTimerBottomBar> {
             ElevatedButton(
               onPressed: () {
                 // print(widget.key);
-                context.read<TimerViewModel>().loadTimer();
+                // context.read<TimerViewModel>().loadTimer();
 
                 context.read<OnTimerListener>().setIsPlaying = false;
                 // widget.key?.currentState?.testFunc();

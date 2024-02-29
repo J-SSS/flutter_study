@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_study/time_timer/viewModels/timer_view_model.dart';
 import 'dart:math' as math;
 import 'package:provider/provider.dart';
 
@@ -55,7 +56,12 @@ class ListDrawer extends StatelessWidget {
                                   onPressed: () {},
                                   icon:
                                       Icon(Icons.remove_circle_outline_sharp)),
-                              // IconButton(onPressed: (){}, icon: Icon(Icons.add)),
+                              IconButton(onPressed: (){
+                                  context.read<TimerViewModel>().saveConfig('test', 'name');
+                              }, icon: Icon(Icons.save)),
+                              IconButton(onPressed: (){
+                                context.read<TimerViewModel>().loadConfig();
+                              }, icon: Icon(Icons.cloud_upload_rounded)),
                             ],
                           ),
                         ),
@@ -99,6 +105,25 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
             title: Text('Item ${_items[index]}'),
             trailing: Icon(Icons.drag_handle),
           ),
+//         ExpansionTile(
+//           key: Key('$index'),
+//           title: Text('tst'),
+//           children: <Widget>[
+// // 아이템이 펼쳐졌을 때 나타나는 내용
+//             ListTile(
+//               title: Text('Subitem 1'),
+//               onTap: () {
+// // Handle subitem tap
+//               },
+//             ),
+//             ListTile(
+//               title: Text('Subitem 2'),
+//               onTap: () {
+// // Handle subitem tap
+//               },
+//             ),
+//           ],
+//         )
       ],
       onReorder: (int oldIndex, int newIndex) {
         setState(() {
@@ -112,30 +137,3 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
     );
   }
 }
-
-// ListView.separated(
-// itemCount: itemList.length,
-// itemBuilder: (BuildContext context, int index) {
-// return ExpansionTile(
-// title: Text(itemList[index]),
-// children: <Widget>[
-// // 아이템이 펼쳐졌을 때 나타나는 내용
-// ListTile(
-// title: Text('Subitem 1'),
-// onTap: () {
-// // Handle subitem tap
-// },
-// ),
-// ListTile(
-// title: Text('Subitem 2'),
-// onTap: () {
-// // Handle subitem tap
-// },
-// ),
-// ],
-// );
-// },
-// separatorBuilder: (BuildContext context, int index) {
-// return Divider();
-// },
-// ),

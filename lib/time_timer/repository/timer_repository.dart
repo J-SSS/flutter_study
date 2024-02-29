@@ -1,5 +1,5 @@
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:flutter_study/time_timer/models/timer_setup_model.dart';
+import 'package:flutter_study/time_timer/models/config_model.dart';
 import 'dart:convert';
 
 class TimerRepository {
@@ -7,25 +7,25 @@ class TimerRepository {
 
   TimerRepository(this._prefs);
 
-  Future<void> saveTimer(TimerSetup timer) async {
-    final jsonString = timer.toJson().toString();
-    await _prefs.setString('timer', jsonString);
+  Future<void> saveConfig(ConfigModel config) async {
+    final jsonString = config.toJson();
+    print('저장값 : ${jsonString}');
+    await _prefs.setString('config', jsonString);
   }
 
-  Future<TimerSetup?> getTimer() async {
-    final jsonString = _prefs.getString('timer');
-    print('레포지토리'); // jdi
+  Future<ConfigModel?> getConfig() async {
+    final jsonString = _prefs.getString('config');
     if (jsonString != null) {
-      print("정보찾기"); // jdi
-      print(jsonString); // jdi
-      // final Map<String, dynamic> json = Map<String, dynamic>.from(jsonString as Map);
+      print('로딩 값 : ${jsonString}');
       final Map<String, dynamic> jsonMap = json.decode(jsonString);
-      return TimerSetup.fromJson(jsonMap);
+      return ConfigModel.fromJson(jsonMap);
+    } else {
+      print('default 값 반환');
+      return ConfigModel.fromJson(null);
     }
-    return null;
   }
 
-  Future<void> clearTimer() async {
-    await _prefs.remove('timer');
+  Future<void> clearConfig() async {
+    await _prefs.remove('config');
   }
 }
