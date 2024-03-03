@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_study/time_timer/utils/timer_utils.dart';
 import 'dart:async';
 import 'dart:math' as math;
 import 'package:provider/provider.dart';
@@ -54,6 +55,7 @@ class _BatteryTypeState extends State<BatteryType> {
 
   @override
   Widget build(BuildContext context) {
+
     return CustomPaint(
       size: widget.size, // 원하는 크기로 지정
       painter: BatteryTypePainter(
@@ -86,21 +88,29 @@ class BatteryTypePainter extends CustomPainter {
 
     double strokeW = (sizeH * 0.03).floorToDouble(); // 선 굵기 3프로
     double paddingL = (sizeH * 0.15).floorToDouble(); // 시간 부분 패딩 사이즈
-    double paddingHeadL = (sizeH * 0.30).floorToDouble(); // +극 부분 패딩 사이즈
-    double paddingBaseL = paddingL-strokeW; // 테두리 부분 패딩 사이즈
 
-    double lineH = (sizeH * 0.015).floorToDouble(); // 구분선은 외곽선의 절반?
+    // double lineH = (sizeH * 0.015).floorToDouble(); // 구분선은 외곽선의 절반?
 
-    double netH = sizeH - (strokeW * 2.5); // 배경 여백 밑 테두리 제외한 높이 좌표
-    double netLength = sizeH - (strokeW * 5); // 상, 하 여백 밑 테두리 제외한 빈공간 절대높이
+    double netH = sizeH - (strokeW * 3); // 배경 여백 밑 테두리 제외한 높이 좌표
+    double netLength = sizeH - (strokeW * 6); // 상, 하 여백 밑 테두리 제외한 빈공간 절대높이
 
 
     double width = size.width;
-    // double radius = strokeW; // 원하는 둥근 모서리 반지름
 
     int clickToMin = ((netH - clickPoint.dy)/netLength * 60).floor();
 
-    print('네트높이 : ${netLength}, 시간 : ${clickToMin}, 클릭Y : ${clickPoint.dy}, 최대좌표 : ${netH}, 상단여백 : ${strokeW*2.5}');
+    // print('네트높이 : ${netLength}, 시간 : ${clickToMin}, 클릭Y : ${clickPoint.dy}, 최대좌표 : ${netH}, 상단여백 : ${strokeW*2.5}');
+
+    int sectionCnt = (clickToMin/6).floor();
+    // print(sectionCnt);
+    double sectionLength = (netLength - 7 * 9) / 10;
+    // print(sectionLength);
+
+
+
+    double minToPoint = netH - (netLength / 60) * clickToMin;
+
+    // print(minToPoint);
 
     // 10등분을 하려면 여백선은 11개가 필요하다
 
@@ -112,34 +122,37 @@ class BatteryTypePainter extends CustomPainter {
       paint.color = Colors.greenAccent;
     }
 
-
-
-
     double dy = clickPoint.dy;
     int intDy = dy.floor();
-    double radius = 20.0;
-    double innerRadius = 10.0;
+    double radius = 15.0;
     Rect rect;
     RRect rRect;
-    // print(size); // 500??
     // print(size.height); // 500??
 
-
-
-    if(intDy >= 0){
-      rect  = Rect.fromLTRB(paddingL, dy, width-paddingL, netH - lineH);
+    if(clickToMin >= 0 && clickToMin < 60){
+      rect  = Rect.fromLTRB(paddingL, minToPoint, width-paddingL, netH);
       RRect rRect = RRect.fromRectAndRadius(rect, Radius.circular(radius));
-    //   rRect = RRect.fromRectAndCorners(rect,
-    // bottomLeft: Radius.circular(innerRadius), bottomRight: Radius.circular(innerRadius));
+
+      rRect = RRect.fromRectAndCorners(rect,
+    bottomLeft: Radius.circular(radius), bottomRight: Radius.circular(radius));
       canvas.drawRRect(rRect, paint);
-    } else {
-      rect  = Rect.fromLTRB(paddingL, lineH, width-paddingL, netH - lineH);
-      rRect = RRect.fromRectAndRadius(rect, Radius.circular(innerRadius));
+
+    } else if (clickToMin >= 60) {
+      rect  = Rect.fromLTRB(paddingL, strokeW * 3, width-paddingL, netH);
+      rRect = RRect.fromRectAndRadius(rect, Radius.circular(radius));
       canvas.drawRRect(rRect, paint);
     }
 
-    // for(double i = 40 ; i < 460 ; i+=43){
-    //   canvas.drawRect(Rect.fromLTRB(75, i+5, width-75, i), paint2);
+    for(double i = netH ; i > 30 ; i-=sectionLength+7){
+      canvas.drawRect(Rect.fromLTRB(paddingL, i+5, paddingL * 1.8, i), paint2);
+    }
+
+    // for(int i = 0 ; i < sectionCnt ; i++){
+    //   // print('i : ${i} , section : ${sectionCnt}');
+    //   if(i < sectionCnt){
+    //     print('선 : ${i}');
+    //     canvas.drawRect(Rect.fromLTRB(paddingL, netH-sectionLength * (i+1) -4 - (i*8), width-paddingL, netH-sectionLength * (i+1) - (i * 8)), paint2);
+    //   }
     // }
     }
 

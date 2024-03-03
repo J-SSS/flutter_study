@@ -12,8 +12,8 @@ class TimeConfigListener with ChangeNotifier {
 
   Offset clickPoint = Offset(0,0);
 
-  var playBtn = 'btm_play';
-  var loopBtn = 'btm_roop_1';
+  var playBtn = 'btn_play';
+  var loopBtn = 'btn_roop_none';
 
   set setPlayBtn(var btn) {
     this.playBtn = btn;
@@ -31,11 +31,13 @@ class TimeConfigListener with ChangeNotifier {
   }
 
   set setLoopBtn(var btn) {
-    int currentSet = int.parse(this.loopBtn.split('_')[2]);
-    if (currentSet != 4) {
-      this.loopBtn = 'btm_roop_${currentSet + 1}';
+    String currentSet = this.loopBtn.split('_')[2];
+    if (currentSet == 'none') {
+      this.loopBtn = 'btn_roop_one';
+    } else if(currentSet == 'one') {
+      this.loopBtn = 'btn_roop_list';
     } else {
-      this.loopBtn = 'btm_roop_1';
+      this.loopBtn = 'btn_roop_none';
     }
     notifyListeners();
   }

@@ -43,8 +43,8 @@ class ConfigModel {
       );
     } else {
       return ConfigModel(
-        id: null,
-        name: null,
+        id: 'default',
+        name: 'default',
       );
     }
   }

@@ -37,10 +37,10 @@ class AppConfigListener with ChangeNotifier {
     } else {
       this.painterSize = mediaQuery.size.height * 0.85;
     }
-
-
-
-
-
   }
+
+  set setMediaQueryT(BuildContext context){
+    this.mediaQuery = MediaQuery.of(context);
+  }
+
 }

@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:flutter_study/time_timer/base_timer.dart';
 import 'package:flutter_study/time_timer/screen/on_timer_screen.dart' as on_timer_screen;
 import 'package:flutter_study/time_timer/screen/theme_screen.dart' as theme_screen;
+import 'package:flutter_study/time_timer/screen/setting_screen.dart' as setting_screen;
 
 import 'package:flutter_study/time_timer/provider/app_config.dart';
 import 'package:flutter_study/time_timer/provider/time_config.dart';
@@ -75,6 +76,7 @@ class _ButtomBarWidgetState extends State<ButtomBarWidget>{
                       Navigator.push(
                         context,
                         MaterialPageRoute(builder: (context) => theme_screen.ThemeScreen()),
+                        // MaterialPageRoute(builder: (context) => setting_screen.MySettingScreen()),
                       );
                     },
                     style: ElevatedButton.styleFrom(
@@ -83,7 +85,7 @@ class _ButtomBarWidgetState extends State<ButtomBarWidget>{
                       fixedSize: Size(70.0, 70.0),
                     ),
                     child:  Image.asset(
-                      'assets/icon/btm_reset.png',
+                      'assets/icon/btm_theme.png',
                       width: 45.0,
                       height: 45.0,
                     ),
@@ -151,14 +153,14 @@ class _ButtomBarWidgetState extends State<ButtomBarWidget>{
       context.read<TimeConfigListener>().isPlaying = true;
       context.read<TimeConfigListener>().isPause = false;
       context.read<TimeConfigListener>().ableEdit = false;
-      context.read<TimeConfigListener>().setPlayBtn = 'btm_pause';
+      context.read<TimeConfigListener>().setPlayBtn = 'btn_pause';
 
       _start(context);
     } else {
       context.read<TimeConfigListener>().isPlaying = false;
       context.read<TimeConfigListener>().isPause = true;
       context.read<TimeConfigListener>().ableEdit = true;
-      context.read<TimeConfigListener>().setPlayBtn = 'btm_play';
+      context.read<TimeConfigListener>().setPlayBtn = 'btn_play';
 
       _pause();
     }
@@ -180,7 +182,7 @@ class _ButtomBarWidgetState extends State<ButtomBarWidget>{
 
   // 초기화
   void _reset() {
-    context.read<TimeConfigListener>().setPlayBtn = 'btm_play';
+    context.read<TimeConfigListener>().setPlayBtn = 'btn_play';
     context.read<TimeConfigListener>().isPlaying = false;
     context.read<TimeConfigListener>().setSetupTime = 60;
 

@@ -15,6 +15,8 @@ import 'package:flutter_study/time_timer/widgets/battery_type.dart';
 import 'package:flutter_study/time_timer/list_drawer.dart';
 import 'package:flutter_study/time_timer/utils/timer_utils.dart' as utils;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_study/time_timer/screen/setting_screen.dart' as setting_screen;
+
 
 class MyApp extends StatelessWidget {
   final SharedPreferences prefs;
@@ -34,40 +36,90 @@ class MyApp extends StatelessWidget {
       ],
       child: MaterialApp(
         title: 'My Time Timer',
-        home: MyTimeTimer(),
-      ),
+          theme: ThemeData(
+            // expansionTileTheme: ExpansionTileThemeData(
+            //   // tilePadding : EdgeInsets.symmetric(horizontal: 5.0, vertical: 5.0),
+            //   // childrenPadding : EdgeInsets.symmetric(horizontal: 5.0, vertical: 5.0),
+            //   backgroundColor: Colors.grey[200],
+            //   textColor: Colors.blue,
+            // ),
+          ),
+        home:  MyTimeTimer()),
     );
   }
 }
 
-class MyTimeTimer extends StatelessWidget {
-  // GlobalKey 생성
+class ResponsiveApp {
+  static MediaQueryData? _mediaQueryData;
+
+  MediaQueryData? get mq => _mediaQueryData;
+
+  static void setMq(BuildContext context) {
+    _mediaQueryData = MediaQuery.of(context);
+  }
+}
+
+class MyTimeTimer extends StatefulWidget {
+
+  @override
+  State<StatefulWidget> createState() => _MyTimeTimerState();
+}
+
+class _MyTimeTimerState extends State<MyTimeTimer> with AutomaticKeepAliveClientMixin{
+// GlobalKey 생성
   // final GlobalKey<_PizzaTypeState> pizzaTypeKey = GlobalKey<_PizzaTypeState>();
   late MediaQueryData mediaQueryData;
   late Size mediaSize;
 
   @override
-  Widget build(BuildContext context) {
-    mediaQueryData = MediaQuery.of(context);
-    mediaSize = mediaQueryData.size;
-    print(mediaSize);
-    late Size mainSize;
-    Offset clickPoint = Offset(150, -150);
-    WidgetsBinding.instance?.addPostFrameCallback((_) {
-      // jdi 찾아보기
-      context.read<AppConfigListener>().setMediaQuery = MediaQuery.of(context);
-      print('### 미디어쿼리 정보 ###');
-      print(MediaQuery.of(context));
+  bool get wantKeepAlive => true;
 
-      double painterSize = context.read<AppConfigListener>().painterSize;
-      mainSize = Size(painterSize, painterSize);
-    });
+  @override
+  void initState() {
+    super.initState();
+  }
+
+
+  @override
+  Widget build(BuildContext context) {
+
+
+    // 초기화
+    context.read<TimerViewModel>().loadPreset();
+    //
+    // mediaQueryData = MediaQuery.of(context);
+    // mediaSize = mediaQueryData.size;
+    print('### 메인 위젯 빌드 ###');
+    late Size mainSize = MediaQuery.sizeOf(context);
+    print(mainSize);
+
+    Offset clickPoint = Offset(150, -150);
+
+    // WidgetsBinding.instance?.addPostFrameCallback((_) {
+    //   // jdi 찾아보기
+    //   context.read<AppConfigListener>().setMediaQuery = MediaQuery.of(context);
+
+    //   double painterSize = context.read<AppConfigListener>().painterSize;
+    // });
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(
         // backgroundColor: Colors.green,
         title: Text('My Time Timer'),
         centerTitle: true,
-        toolbarHeight: MediaQuery.of(context).size.height / 10,
+        toolbarHeight: mainSize.height / 10,
+        actions: [
+          IconButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => setting_screen.SettingScreen()),
+              );
+            },
+            icon: Icon(Icons.settings),
+            color: Colors.grey,
+          )
+        ],
       ),
       drawer: ListDrawer(), // 보조 화면
       body: Center(
@@ -75,9 +127,10 @@ class MyTimeTimer extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             SizedBox(
-                height: MediaQuery.of(context).size.height * (6 / 10),
+                height: mainSize.height * (6 / 10),
                 child: Center(
                   child:
+                  // child:Text(''),
                   // GestureDetector(
                   //   onPanUpdate: (point) {
                   //     utils.showOverlayText(context);
@@ -111,19 +164,21 @@ class MyTimeTimer extends StatelessWidget {
                     },
                     child: Stack(children: [
                       // BatteryType(clickPoint: clickPoint)
-                      BatteryTypeBase(size: Size(mediaSize.width, mediaSize.height)),
+                      BatteryTypeBase(
+                          size: Size(mainSize.width, mainSize.height)),
                       BatteryType(
-                        size: Size(mediaSize.width, mediaSize.height),
-                        isOnTimer: false,
-                        setupTime: context.read<TimeConfigListener>().setupTime,
-                      clickPoint: context.read<TimeConfigListener>().clickPoint
-                      ),
+                          size: Size(mainSize.width, mainSize.height),
+                          isOnTimer: false,
+                          setupTime:
+                          context.read<TimeConfigListener>().setupTime,
+                          clickPoint:
+                          context.read<TimeConfigListener>().clickPoint),
                     ]),
                   ),
                 )),
             SizedBox(
-              height: MediaQuery.of(context).size.height * (2.0 / 10),
-              child: const ButtomBarWidget(),
+              height: mainSize.height * (2.0 / 10),
+              child: ButtomBarWidget(),
             ),
           ],
         ),
