@@ -131,18 +131,14 @@ class _PresetWidgetState extends State<PresetWidget> {
                   ExpansionTile(
                       initiallyExpanded: false,
                       key: Key('$index'),
-                      tilePadding : EdgeInsets.symmetric(horizontal: 15.0, vertical: 0.0),
+                      tilePadding : EdgeInsets.symmetric(horizontal: 20.0, vertical: 0.0),
+                      controlAffinity: ListTileControlAffinity.leading,
                       textColor: Colors.blue,
                       title: expandedKey.contains(index)
-                          ? SizedBox(
-                              child: Row(
+                          ? Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  Icon(
-                                    MaterialCommunityIcons.folder_open_outline,
-                                    color: Colors.grey,
-                                  ),
-                                  Text('  ${item['nodeName']}'),
+                                  Text('${item['nodeName']}'),
                                   SizedBox(
                                     width: 80,
                                   ),
@@ -174,17 +170,19 @@ class _PresetWidgetState extends State<PresetWidget> {
                                         iconSize: 25),
                                   ),
                                 ],
-                              ),
                             )
                           : Row(mainAxisSize: MainAxisSize.min, children: [
-                              Icon(
-                                MaterialCommunityIcons.folder_outline,
-                                color: Colors.grey,
-                              ),
-                              Text('  ${item['nodeName']}'),
+                              Text('${item['nodeName']}'),
                             ]),
-                      // trailing: SizedBox(width: 50,child: Icon(Icons.add),),
-                      trailing: SizedBox(),
+                    leading:  expandedKey.contains(index)
+                        ? Icon(
+                      MaterialCommunityIcons.folder_open_outline,
+                      color: Colors.grey,
+                    ) : Icon(
+                      MaterialCommunityIcons.folder_outline,
+                      color: Colors.grey,
+                    ),
+                      // trailing: Visibility(visible: false, child: SizedBox(),),
                       onExpansionChanged: (bool expanding) {
                         setState(() {
                           if (expanding) {
