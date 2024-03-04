@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_study/main.dart';
+import 'dart:developer';
 
 import 'package:flutter_study/time_timer/provider/on_timer_listener.dart';
 import 'package:flutter_study/time_timer/provider/app_config.dart';
@@ -82,6 +84,7 @@ class _MyTimeTimerState extends State<MyTimeTimer> with AutomaticKeepAliveClient
 
   @override
   Widget build(BuildContext context) {
+    AppManager.log('메인 생성');
 
 
     // 초기화
@@ -89,9 +92,12 @@ class _MyTimeTimerState extends State<MyTimeTimer> with AutomaticKeepAliveClient
     //
     // mediaQueryData = MediaQuery.of(context);
     // mediaSize = mediaQueryData.size;
-    print('### 메인 위젯 빌드 ###');
+    // mediaSize = mediaQueryData.size;
+
+
+
     late Size mainSize = MediaQuery.sizeOf(context);
-    print(mainSize);
+    // print(mainSize);
 
     Offset clickPoint = Offset(150, -150);
 
@@ -130,51 +136,50 @@ class _MyTimeTimerState extends State<MyTimeTimer> with AutomaticKeepAliveClient
                 height: mainSize.height * (6 / 10),
                 child: Center(
                   child:
-                  // child:Text(''),
-                  // GestureDetector(
-                  //   onPanUpdate: (point) {
-                  //     utils.showOverlayText(context);
-                  //     Offset clickPoint = point.localPosition;
-                  //     int angleToMin =
-                  //         utils.angleToMin(clickPoint, Size(350, 350));
-                  //     context.read<TimeConfigListener>().setSetupTime =
-                  //         angleToMin;
-                  //   },
-                  //   child: Stack(children: [
-                  //     PizzaTypeBase(size: Size(350, 350)),
-                  //     PizzaType(
-                  //       size: Size(350, 350),
-                  //       isOnTimer: false,
-                  //       setupTime: context.read<TimeConfigListener>().setupTime,
-                  //     ),
-                  //   ]),
-                  // ),
                   GestureDetector(
                     onPanUpdate: (point) {
-                      // utils.showOverlayText(context);
-
-                      clickPoint = point.localPosition;
-                      context.read<TimeConfigListener>().setClickPoint =
-                          clickPoint;
-
+                      utils.showOverlayText(context);
+                      Offset clickPoint = point.localPosition;
                       int angleToMin =
-                      utils.angleToMin(clickPoint, Size(350, 350));
+                          utils.angleToMin(clickPoint, Size(350, 350));
                       context.read<TimeConfigListener>().setSetupTime =
                           angleToMin;
                     },
                     child: Stack(children: [
-                      // BatteryType(clickPoint: clickPoint)
-                      BatteryTypeBase(
-                          size: Size(mainSize.width, mainSize.height)),
-                      BatteryType(
-                          size: Size(mainSize.width, mainSize.height),
-                          isOnTimer: false,
-                          setupTime:
-                          context.read<TimeConfigListener>().setupTime,
-                          clickPoint:
-                          context.read<TimeConfigListener>().clickPoint),
+                      PizzaTypeBase(size: Size(350, 350)),
+                      PizzaType(
+                        size: Size(350, 350),
+                        isOnTimer: false,
+                        setupTime: context.read<TimeConfigListener>().setupTime,
+                      ),
                     ]),
                   ),
+                  // GestureDetector(
+                  //   onPanUpdate: (point) {
+                  //     // utils.showOverlayText(context);
+                  //
+                  //     clickPoint = point.localPosition;
+                  //     context.read<TimeConfigListener>().setClickPoint =
+                  //         clickPoint;
+                  //
+                  //     int angleToMin =
+                  //     utils.angleToMin(clickPoint, Size(350, 350));
+                  //     context.read<TimeConfigListener>().setSetupTime =
+                  //         angleToMin;
+                  //   },
+                  //   child: Stack(children: [
+                  //     // BatteryType(clickPoint: clickPoint)
+                  //     BatteryTypeBase(
+                  //         size: Size(mainSize.width, mainSize.height)),
+                  //     BatteryType(
+                  //         size: Size(mainSize.width, mainSize.height),
+                  //         isOnTimer: false,
+                  //         setupTime:
+                  //         context.read<TimeConfigListener>().setupTime,
+                  //         clickPoint:
+                  //         context.read<TimeConfigListener>().clickPoint),
+                  //   ]),
+                  // ),
                 )),
             SizedBox(
               height: mainSize.height * (2.0 / 10),

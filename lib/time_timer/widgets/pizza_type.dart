@@ -34,7 +34,9 @@ class _PizzaTypeState extends State<PizzaType> {
         if(isPlaying){
           widget.setupTime -= 1;
           if(widget.setupTime > -2){
-            setState(() { print('남은 시간 : ${widget.setupTime}'); });
+            setState(() {
+              // print('남은 시간 : ${widget.setupTime}');
+            });
           } else {
             _timer.cancel();
           }

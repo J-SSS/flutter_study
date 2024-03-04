@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_study/time_timer/screen/on_timer_screen.dart';
+import 'package:flutter_study/time_timer/utils/isolate_timer.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:developer';
 
 // import 'package:flutter_study/screen/home_screen.dart';
 // import 'package:flutter_study/screen/home_screen2.dart';
@@ -18,12 +21,36 @@ import 'package:flutter_study/time_timer/base_timer.dart';
   3. MaterialApp + scaffold가 가장 기본적인 설정
   4. 앱바 : 상단바 위젯, 스낵바 : 알림창 위젯
  */
+
+// log('[ ########### IsolateTimer 생성 ########### ]',name:"SYSTEM");
+// print('\x1B[31m[ ##### IsolateTimer 생성 ##### ]\x1B[0m');
+
+// debugPrint('\x1B[31m[ ########### $message ########### ]\x1B[0m')
+
+class AppManager {
+  static IsolateTimerRunner? isolateTimer;
+
+  static void log(String message, {String? type}){
+    int length = (26 - message.length~/2);
+    String guideStr = '#' * length;
+
+    switch(type){
+      case ('T') : {
+        return debugPrint('\x1B[33m[ $guideStr $message $guideStr ]\x1B[0m');
+      }
+      default : {
+        return debugPrint('\x1B[31m[ $guideStr $message $guideStr ]\x1B[0m');
+      }
+      }
+    }
+}
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized(); // jdi 찾아보기 : 비동기 환경에서 초기화를 보장한다?
   final prefs = await SharedPreferences.getInstance();
+  AppManager.isolateTimer = await IsolateTimerRunner.create();
+  // AppManager.isolateTimer = await IsolateTimerRunner();
   runApp(MyApp(prefs: prefs));
-
-
 
   // runApp(MyApp());
 

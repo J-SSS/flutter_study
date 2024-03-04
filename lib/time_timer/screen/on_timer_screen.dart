@@ -6,7 +6,10 @@ import 'package:flutter_study/time_timer/utils/timer_utils.dart' as utils;
 import 'package:flutter_study/time_timer/viewModels/timer_view_model.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_study/time_timer/widgets/pizza_type.dart';
+import 'dart:developer';
+import 'dart:isolate';
 
+import '../../main.dart';
 import '../provider/time_config.dart';
 
 class OnTimerScreen extends StatelessWidget {
@@ -88,8 +91,20 @@ class OnTimerBottomBar extends StatefulWidget {
 }
 
 class _onTimerBottomBarState extends State<OnTimerBottomBar> {
+  late TimerRun timerRun;
+  ReceivePort receivePort = ReceivePort();
+
   @override
   Widget build(BuildContext context) {
+    timerRun = TimerRun(receivePort);
+    receivePort.listen((message) {
+      if(message is SendPort){
+        print('샌드포트');
+        context.read<TimerViewModel>().testFunc();
+      } else {
+        print('메시지수신');
+      }
+    });
     return Visibility(
       // visible: context.watch<AppConfigListener>().isOnTimerBottomViewYn,
       visible: true,
@@ -101,12 +116,30 @@ class _onTimerBottomBarState extends State<OnTimerBottomBar> {
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
             ElevatedButton(
-              onPressed: () {
+              onPressed: () async {
                 // print(widget.key);
                 // context.read<TimerViewModel>().loadTimer();
+                // 백그라운드 Isolate 시작
+                // IsolateTimerRunner isolateTimer = await IsolateTimerRunner.create();
 
-                context.read<OnTimerListener>().setIsPlaying = false;
+                timerRun.runPeriodicTimer();
+
+
+                // 5초마다 백그라운드 Isolate에서 타이머 이벤트 발생
+                // AppManager.isolateTimer?.runPeriodicTimer(Duration(seconds: 5), (timer) {
+                //   // context.read<TimerViewModel>().testFunc();
+                //   print('백그라운드 타이머 이벤트 발생: ${DateTime.now()}');
+                // });
+
+                // context.read<OnTimerListener>().setIsPlaying = false;
                 // widget.key?.currentState?.testFunc();
+              },
+              child: Text('시작'),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                // 5초마다 백그라운드 Isolate에서 타이머 이벤트 발생
+                // AppManager.isolateTimer?.cancelPeriodicTimer();
               },
               child: Text('정지'),
             ),
@@ -124,4 +157,48 @@ class _onTimerBottomBarState extends State<OnTimerBottomBar> {
       ),
     );
   }
+}
+
+class TimerRun {
+  // final ReceivePort _mainReceive = ReceivePort();
+  late ReceivePort _subReceive;
+  late SendPort sendPort;
+  // late BuildContext context;
+
+  TimerRun(ReceivePort receivePort2){
+    // print(_mainReceive.sendPort);
+    // this.context = context;
+     final receivePort = ReceivePort();
+     // _mainReceive = receivePort;
+    Isolate.spawn(_isolateTimer, receivePort2.sendPort);
+     // receivePort.listen((message) {
+     //   if(message is SendPort){
+     //     sendPort = message as SendPort;
+     //   } else {
+     //     // context.read<TimerViewModel>().testFunc();
+     //     print('메시지수신');
+     //   }
+     // });
+  }
+
+  /** IsolateTimer 명령 */
+  void runPeriodicTimer() {
+    sendPort.send("msg");
+    // _receivePort.listen((message) { print('리시버');});
+  }
+
+    void _isolateTimer(SendPort sendPort) {
+    print('아이솔');
+    ReceivePort receivePort = ReceivePort(); // 1. Timer Isolate가 사용할 ReceivePort를 생성한다
+    sendPort.send(receivePort.sendPort); // 2. 메인 Isolate에게 Timer Isolate의 ReceivePort를 전달한다
+    // _subReceive = receivePort;
+
+    // print(_subReceive);
+    // context.read<TimerViewModel>().testFunc();
+    // receivePort.listen((message) {
+    //   print('메세지 수신');
+    //   sendPort.send('메세지 응답');
+    // });
+  }
+
 }

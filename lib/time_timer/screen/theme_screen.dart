@@ -2,10 +2,81 @@ import 'package:flutter/material.dart';
 import 'package:flutter_study/time_timer/base_timer.dart';
 import 'package:flutter_study/time_timer/utils/timer_utils.dart' as utils;
 import 'package:flutter_study/time_timer/widgets/pizza_type.dart';
-import 'package:flutter_study/time_timer/screen/select_item_screen.dart' as select_item_screen;
+import 'package:flutter_study/time_timer/screen/select_item_screen.dart'
+    as select_item_screen;
 import 'package:provider/provider.dart';
 
 import '../provider/time_config.dart';
+
+class SelectThemeScreen extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('테마 선택'),
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            CardWidget(title: 'Time Timer', content: ''),
+            // SizedBox(height: 20),
+            // CardWidget(title: 'Battery', content: ''),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class CardWidget extends StatelessWidget {
+  final String title;
+  final String content;
+
+  CardWidget({required this.title, required this.content});
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+        elevation: 5,
+        child: InkWell(
+            borderRadius: BorderRadius.circular(8),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => ThemeScreen()),
+              );
+            },
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(8),
+                  color: Colors.transparent,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    SizedBox(height: 10),
+                    Text(
+                      content,
+                      style: TextStyle(
+                        fontSize: 16,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            )));
+  }
+}
 
 class ThemeScreen extends StatelessWidget {
   @override

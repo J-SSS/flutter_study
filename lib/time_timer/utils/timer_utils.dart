@@ -4,9 +4,14 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'dart:math' as math;
 import 'package:provider/provider.dart';
 import 'package:flutter_study/time_timer/base_timer.dart';
+import 'dart:developer';
 
 import 'package:flutter_study/time_timer/provider/app_config.dart';
 import 'package:flutter_study/time_timer/provider/time_config.dart';
+
+void log(String message){
+  return debugPrint('');
+}
 
 /** 원형 타입에서 클릭 위치를 1/60 시간 단위로 변환 */
 int angleToMin(Offset clickPoint, Size size) {
