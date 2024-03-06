@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 import 'dart:math' as math;
 import 'package:provider/provider.dart';
-import 'package:flutter_study/time_timer/provider/on_timer_listener.dart';
+import 'package:flutter_study/time_timer/provider/timer_controller.dart';
 import 'package:flutter_study/time_timer/provider/app_config.dart';
-import 'package:flutter_study/time_timer/provider/time_config.dart';
+
 
 class PizzaType extends StatefulWidget {
   bool isOnTimer = false;
@@ -21,45 +21,15 @@ class PizzaType extends StatefulWidget {
 }
 
 class _PizzaTypeState extends State<PizzaType> {
-  late Timer _timer;
-
   _PizzaTypeState();
 
   @override
-  void initState() {
-    if (widget.isOnTimer) {
-      print('한 번만 작동');
-      _timer = Timer.periodic(Duration(seconds: 1), (timer) {
-        bool isPlaying = context.read<OnTimerListener>().isPlaying;
-        if(isPlaying){
-          widget.setupTime -= 1;
-          if(widget.setupTime > -2){
-            setState(() {
-              // print('남은 시간 : ${widget.setupTime}');
-            });
-          } else {
-            _timer.cancel();
-          }
-        }
-      });
-    }
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    if (widget.isOnTimer) {
-      _timer.cancel();
-    }
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
+    // print('피자타입 ${widget.isOnTimer}');
     return CustomPaint(
       size: widget.size, // 원하는 크기로 지정
       painter: PizzaTypePainter(
-        angleToMin: widget.isOnTimer ? widget.setupTime : context.watch<TimeConfigListener>().setupTime,
+        angleToMin: widget.isOnTimer ? context.select((TimerController T) => T.remainTime) : context.select((TimerController T) => T.setupTime),
       ),
     );
   }

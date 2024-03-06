@@ -3,9 +3,10 @@ import 'package:flutter_study/time_timer/utils/timer_utils.dart';
 import 'dart:async';
 import 'dart:math' as math;
 import 'package:provider/provider.dart';
-import 'package:flutter_study/time_timer/provider/on_timer_listener.dart';
+import 'package:flutter_study/time_timer/provider/timer_controller.dart';
 import 'package:flutter_study/time_timer/provider/app_config.dart';
-import 'package:flutter_study/time_timer/provider/time_config.dart';
+
+
 
 class BatteryType extends StatefulWidget {
   bool isOnTimer = false;
@@ -31,7 +32,7 @@ class _BatteryTypeState extends State<BatteryType> {
     if (widget.isOnTimer) {
       print('한 번만 작동');
       _timer = Timer.periodic(Duration(seconds: 1), (timer) {
-        bool isPlaying = context.read<OnTimerListener>().isPlaying;
+        bool isPlaying = context.read<TimerController>().isPlaying;
         if(isPlaying){
           widget.setupTime -= 1;
           if(widget.setupTime > -2){
@@ -59,7 +60,7 @@ class _BatteryTypeState extends State<BatteryType> {
     return CustomPaint(
       size: widget.size, // 원하는 크기로 지정
       painter: BatteryTypePainter(
-        angleToMin: widget.isOnTimer ? widget.setupTime : context.watch<TimeConfigListener>().setupTime, clickPoint: context.watch<TimeConfigListener>().clickPoint
+        angleToMin: widget.isOnTimer ? widget.setupTime : context.watch<TimerController>().setupTime, clickPoint: context.watch<TimerController>().clickPoint
       ),
     );
   }

@@ -63,7 +63,7 @@ android {
 flutter {
     source '../..'
     compileSdkVersion = 33
-    minSdkVersion = 21
+    minSdkVersion = 22
 
 }
 

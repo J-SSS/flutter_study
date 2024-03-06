@@ -7,11 +7,9 @@ import 'package:flutter_study/time_timer/base_timer.dart';
 import 'dart:developer';
 
 import 'package:flutter_study/time_timer/provider/app_config.dart';
-import 'package:flutter_study/time_timer/provider/time_config.dart';
 
-void log(String message){
-  return debugPrint('');
-}
+import 'package:flutter_study/time_timer/provider/timer_controller.dart';
+
 
 /** 원형 타입에서 클릭 위치를 1/60 시간 단위로 변환 */
 int angleToMin(Offset clickPoint, Size size) {
@@ -69,7 +67,7 @@ void showOverlayText(BuildContext context) {
           child: Center(
             child: Text(
               context.select(
-                  (TimeConfigListener t) => t.setupTime.toString() + " mins"),
+                  (TimerController t) => t.setupTime.toString() + " mins"),
               style: TextStyle(
                   color: Colors.white.withOpacity(0.5),
                   fontSize: 25,

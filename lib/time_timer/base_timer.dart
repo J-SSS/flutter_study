@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_study/main.dart';
 import 'dart:developer';
 
-import 'package:flutter_study/time_timer/provider/on_timer_listener.dart';
+import 'package:flutter_study/time_timer/provider/timer_controller.dart';
 import 'package:flutter_study/time_timer/provider/app_config.dart';
-import 'package:flutter_study/time_timer/provider/time_config.dart';
+
+import 'package:flutter_study/time_timer/utils/isolate_timer.dart';
 import 'package:flutter_study/time_timer/viewModels/timer_view_model.dart';
 import 'package:flutter_study/time_timer/repository/timer_repository.dart';
 
@@ -29,12 +30,9 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (context) => TimeConfigListener()),
+        ChangeNotifierProvider(create: (context) => TimerViewModel(TimerRepository(prefs))), // shared preference
+        ChangeNotifierProvider(create: (context) => TimerController(), lazy: false,), // isolate timer
         ChangeNotifierProvider(create: (context) => AppConfigListener()),
-        ChangeNotifierProvider(create: (context) => OnTimerListener()),
-        ChangeNotifierProvider(
-            create: (context) => TimerViewModel(TimerRepository(prefs))),
-        // shared preferences 컨트롤
       ],
       child: MaterialApp(
         title: 'My Time Timer',
@@ -51,62 +49,64 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class ResponsiveApp {
-  static MediaQueryData? _mediaQueryData;
 
-  MediaQueryData? get mq => _mediaQueryData;
 
-  static void setMq(BuildContext context) {
-    _mediaQueryData = MediaQuery.of(context);
-  }
-}
-
-class MyTimeTimer extends StatefulWidget {
-
-  @override
-  State<StatefulWidget> createState() => _MyTimeTimerState();
-}
-
-class _MyTimeTimerState extends State<MyTimeTimer> with AutomaticKeepAliveClientMixin{
+class MyTimeTimer extends StatelessWidget {
 // GlobalKey 생성
   // final GlobalKey<_PizzaTypeState> pizzaTypeKey = GlobalKey<_PizzaTypeState>();
   late MediaQueryData mediaQueryData;
   late Size mediaSize;
 
-  @override
-  bool get wantKeepAlive => true;
+  // Map<String,dynamic> getSize(Size size){
+  //   double w = size.width;
+  //   double h = size.height;
+  //
+  //   Map<String,dynamic> rsltMap = {};
+  //
+  //   if(h > w) {
+  //     rsltMap['ori'] = 'port'; // Orientation.portrait: 세로 방향
+  //     rsltMap['size'] =
+  //   } else {
+  //     rsltMap['ori'] = 'land'; // Orientation.landscape: 가로 방향
+  //
+  //   }
+  //   return rsltMap;
+  // }
 
-  @override
-  void initState() {
-    super.initState();
+  bool isPortrait(Size size){
+    double w = size.width;
+    double h = size.height;
+
+    // Orientation.portrait: 세로 방향
+    // Orientation.landscape: 가로 방향
+
+    if(h > w) {
+      return false;
+    } else {
+      return true;
+
+    }
+
   }
-
 
   @override
   Widget build(BuildContext context) {
     AppManager.log('메인 생성');
 
-
     // 초기화
     context.read<TimerViewModel>().loadPreset();
-    //
-    // mediaQueryData = MediaQuery.of(context);
-    // mediaSize = mediaQueryData.size;
-    // mediaSize = mediaQueryData.size;
 
-
+    // context.read<OnTimerListener>().testFunc();
 
     late Size mainSize = MediaQuery.sizeOf(context);
-    // print(mainSize);
 
-    Offset clickPoint = Offset(150, -150);
+    WidgetsBinding.instance?.addPostFrameCallback((_) {
+      // print('초기화');
 
-    // WidgetsBinding.instance?.addPostFrameCallback((_) {
-    //   // jdi 찾아보기
-    //   context.read<AppConfigListener>().setMediaQuery = MediaQuery.of(context);
-
-    //   double painterSize = context.read<AppConfigListener>().painterSize;
-    // });
+      //   // jdi 찾아보기
+      //   context.read<AppConfigListener>().setMediaQuery = MediaQuery.of(context);
+      //   double painterSize = context.read<AppConfigListener>().painterSize;
+    });
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
@@ -141,8 +141,8 @@ class _MyTimeTimerState extends State<MyTimeTimer> with AutomaticKeepAliveClient
                       utils.showOverlayText(context);
                       Offset clickPoint = point.localPosition;
                       int angleToMin =
-                          utils.angleToMin(clickPoint, Size(350, 350));
-                      context.read<TimeConfigListener>().setSetupTime =
+                      utils.angleToMin(clickPoint, Size(350, 350));
+                      context.read<TimerController>().setSetupTime =
                           angleToMin;
                     },
                     child: Stack(children: [
@@ -150,7 +150,7 @@ class _MyTimeTimerState extends State<MyTimeTimer> with AutomaticKeepAliveClient
                       PizzaType(
                         size: Size(350, 350),
                         isOnTimer: false,
-                        setupTime: context.read<TimeConfigListener>().setupTime,
+                        setupTime: context.read<TimerController>().setupTime,
                       ),
                     ]),
                   ),
@@ -159,12 +159,12 @@ class _MyTimeTimerState extends State<MyTimeTimer> with AutomaticKeepAliveClient
                   //     // utils.showOverlayText(context);
                   //
                   //     clickPoint = point.localPosition;
-                  //     context.read<TimeConfigListener>().setClickPoint =
+                  //     context.read<TimerController>().setClickPoint =
                   //         clickPoint;
                   //
                   //     int angleToMin =
                   //     utils.angleToMin(clickPoint, Size(350, 350));
-                  //     context.read<TimeConfigListener>().setSetupTime =
+                  //     context.read<TimerController>().setSetupTime =
                   //         angleToMin;
                   //   },
                   //   child: Stack(children: [
@@ -175,9 +175,9 @@ class _MyTimeTimerState extends State<MyTimeTimer> with AutomaticKeepAliveClient
                   //         size: Size(mainSize.width, mainSize.height),
                   //         isOnTimer: false,
                   //         setupTime:
-                  //         context.read<TimeConfigListener>().setupTime,
+                  //         context.read<TimerController>().setupTime,
                   //         clickPoint:
-                  //         context.read<TimeConfigListener>().clickPoint),
+                  //         context.read<TimerController>().clickPoint),
                   //   ]),
                   // ),
                 )),

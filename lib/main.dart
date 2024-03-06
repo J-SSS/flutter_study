@@ -28,7 +28,8 @@ import 'package:flutter_study/time_timer/base_timer.dart';
 // debugPrint('\x1B[31m[ ########### $message ########### ]\x1B[0m')
 
 class AppManager {
-  static IsolateTimerRunner? isolateTimer;
+  // static late IsolateTimerRunner isolateTimer;
+  // static IsolateTimerRunner isolateTimer = await IsolateTimerRunner.create();
 
   static void log(String message, {String? type}){
     int length = (26 - message.length~/2);
@@ -48,7 +49,8 @@ class AppManager {
 void main() async {
   WidgetsFlutterBinding.ensureInitialized(); // jdi 찾아보기 : 비동기 환경에서 초기화를 보장한다?
   final prefs = await SharedPreferences.getInstance();
-  AppManager.isolateTimer = await IsolateTimerRunner.create();
+  // AppManager.isolateTimer = await IsolateTimerRunner.create();
+  // AppManager.isolateTimer = IsolateTimerRunner.con();
   // AppManager.isolateTimer = await IsolateTimerRunner();
   runApp(MyApp(prefs: prefs));
 

@@ -6,9 +6,9 @@ import 'package:flutter_study/time_timer/base_timer.dart';
 import 'package:flutter_study/time_timer/screen/on_timer_screen.dart' as on_timer_screen;
 import 'package:flutter_study/time_timer/screen/theme_screen.dart' as theme_screen;
 import 'package:flutter_study/time_timer/screen/setting_screen.dart' as setting_screen;
-
+import 'package:flutter_study/time_timer/provider/timer_controller.dart';
 import 'package:flutter_study/time_timer/provider/app_config.dart';
-import 'package:flutter_study/time_timer/provider/time_config.dart';
+
 
 class ButtomBarWidget extends StatefulWidget{
   const ButtomBarWidget({super.key});
@@ -93,7 +93,7 @@ class _ButtomBarWidgetState extends State<ButtomBarWidget>{
                   SizedBox(width: 100,),
                   TextButton( /** 우버튼 */
                     onPressed: () {
-                      context.read<TimeConfigListener>().setLoopBtn = 'set';
+                      context.read<TimerController>().setLoopBtn = 'set';
                     },
                     style: ElevatedButton.styleFrom(
                       shape: CircleBorder(),
@@ -101,7 +101,7 @@ class _ButtomBarWidgetState extends State<ButtomBarWidget>{
                       fixedSize: Size(70.0, 70.0),
                     ),
                     child:  Image.asset(
-                      'assets/icon/${context.select((TimeConfigListener t) => t.loopBtn)}.png',
+                      'assets/icon/${context.select((TimerController t) => t.loopBtn)}.png',
                       width: 45.0,
                       height: 45.0,
                     ),
@@ -135,7 +135,7 @@ class _ButtomBarWidgetState extends State<ButtomBarWidget>{
                   fixedSize: Size(90.0, 90.0),
                 ),
                 child:  Image.asset(
-                  'assets/icon/${context.select((TimeConfigListener t) => t.playBtn)}.png',
+                  'assets/icon/${context.select((TimerController t) => t.playBtn)}.png',
                   width: 120.0,
                   height: 120.0,
                 ),
@@ -146,46 +146,46 @@ class _ButtomBarWidgetState extends State<ButtomBarWidget>{
     );
   }
 
-  void _click(BuildContext context) {
-    var _isPlaying = !context.read<TimeConfigListener>().isPlaying;
-
-    if(_isPlaying) {
-      context.read<TimeConfigListener>().isPlaying = true;
-      context.read<TimeConfigListener>().isPause = false;
-      context.read<TimeConfigListener>().ableEdit = false;
-      context.read<TimeConfigListener>().setPlayBtn = 'btn_pause';
-
-      _start(context);
-    } else {
-      context.read<TimeConfigListener>().isPlaying = false;
-      context.read<TimeConfigListener>().isPause = true;
-      context.read<TimeConfigListener>().ableEdit = true;
-      context.read<TimeConfigListener>().setPlayBtn = 'btn_play';
-
-      _pause();
-    }
-  }
+  // void _click(BuildContext context) {
+  //   var _isPlaying = !context.read<TimerController>().isPlaying;
+  //
+  //   if(_isPlaying) {
+  //     context.read<TimerController>().isPlaying = true;
+  //     context.read<TimerController>().isPause = false;
+  //     context.read<TimerController>().ableEdit = false;
+  //     context.read<TimerController>().setPlayBtn = 'btn_pause';
+  //
+  //     _start(context);
+  //   } else {
+  //     context.read<TimerController>().isPlaying = false;
+  //     context.read<TimerController>().isPause = true;
+  //     context.read<TimerController>().ableEdit = true;
+  //     context.read<TimerController>().setPlayBtn = 'btn_play';
+  //
+  //     _pause();
+  //   }
+  // }
 
   // 타이머 시작
-  void _start(BuildContext context) {
-    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
-      _time--;
-      context.read<TimeConfigListener>().setSetupTime = _time;
-    });
-
-  }
-
-  // 타이머 정지
-  void _pause() {
-    _timer?.cancel();
-  }
-
-  // 초기화
-  void _reset() {
-    context.read<TimeConfigListener>().setPlayBtn = 'btn_play';
-    context.read<TimeConfigListener>().isPlaying = false;
-    context.read<TimeConfigListener>().setSetupTime = 60;
-
-    _timer?.cancel();
-  }
+  // void _start(BuildContext context) {
+  //   _timer = Timer.periodic(Duration(seconds: 1), (timer) {
+  //     _time--;
+  //     context.read<TimerController>().setSetupTime = _time;
+  //   });
+  //
+  // }
+  //
+  // // 타이머 정지
+  // void _pause() {
+  //   _timer?.cancel();
+  // }
+  //
+  // // 초기화
+  // void _reset() {
+  //   context.read<TimerController>().setPlayBtn = 'btn_play';
+  //   context.read<TimerController>().isPlaying = false;
+  //   context.read<TimerController>().setSetupTime = 60;
+  //
+  //   _timer?.cancel();
+  // }
 }

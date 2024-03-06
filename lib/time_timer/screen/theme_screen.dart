@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_study/time_timer/base_timer.dart';
+import 'package:flutter_study/time_timer/provider/timer_controller.dart';
 import 'package:flutter_study/time_timer/utils/timer_utils.dart' as utils;
 import 'package:flutter_study/time_timer/widgets/pizza_type.dart';
 import 'package:flutter_study/time_timer/screen/select_item_screen.dart'
     as select_item_screen;
 import 'package:provider/provider.dart';
 
-import '../provider/time_config.dart';
+
 
 class SelectThemeScreen extends StatelessWidget {
   @override
@@ -103,7 +104,7 @@ class ThemeScreen extends StatelessWidget {
                           size: Size(350, 350),
                           isOnTimer: false,
                           setupTime:
-                              context.read<TimeConfigListener>().setupTime),
+                              context.read<TimerController>().setupTime),
                     ],
                   ),
                 )),
