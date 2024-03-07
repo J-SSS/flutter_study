@@ -20,6 +20,17 @@ import 'package:flutter_study/time_timer/utils/timer_utils.dart' as utils;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_study/time_timer/screen/setting_screen.dart' as setting_screen;
 
+class ProviderTest  extends StatelessWidget{
+  ProviderTest(){
+    print('이게되네?');
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(width: 200, height: 200, color: Colors.red,child: Text('dddddddddddddd'),);
+  }
+}
+
 
 class MyApp extends StatelessWidget {
   final SharedPreferences prefs;
@@ -30,8 +41,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (context) => TimerViewModel(TimerRepository(prefs))), // shared preference
-        ChangeNotifierProvider(create: (context) => TimerController(), lazy: false,), // isolate timer
+        ChangeNotifierProvider(create: (context) => TimerViewModel(TimerRepository(prefs)), lazy: false,), // shared preference
+        ChangeNotifierProvider(create: (context) => TimerController(), lazy: false, child: ProviderTest(),), // isolate timer
         ChangeNotifierProvider(create: (context) => AppConfigListener()),
       ],
       child: MaterialApp(
@@ -96,8 +107,6 @@ class MyTimeTimer extends StatelessWidget {
     // 초기화
     context.read<TimerViewModel>().loadPreset();
 
-    // context.read<OnTimerListener>().testFunc();
-
     late Size mainSize = MediaQuery.sizeOf(context);
 
     WidgetsBinding.instance?.addPostFrameCallback((_) {
@@ -136,50 +145,44 @@ class MyTimeTimer extends StatelessWidget {
                 height: mainSize.height * (6 / 10),
                 child: Center(
                   child:
-                  GestureDetector(
-                    onPanUpdate: (point) {
-                      utils.showOverlayText(context);
-                      Offset clickPoint = point.localPosition;
-                      int angleToMin =
-                      utils.angleToMin(clickPoint, Size(350, 350));
-                      context.read<TimerController>().setSetupTime =
-                          angleToMin;
-                    },
-                    child: Stack(children: [
-                      PizzaTypeBase(size: Size(350, 350)),
-                      PizzaType(
-                        size: Size(350, 350),
-                        isOnTimer: false,
-                        setupTime: context.read<TimerController>().setupTime,
-                      ),
-                    ]),
-                  ),
                   // GestureDetector(
                   //   onPanUpdate: (point) {
-                  //     // utils.showOverlayText(context);
-                  //
-                  //     clickPoint = point.localPosition;
-                  //     context.read<TimerController>().setClickPoint =
-                  //         clickPoint;
-                  //
-                  //     int angleToMin =
-                  //     utils.angleToMin(clickPoint, Size(350, 350));
-                  //     context.read<TimerController>().setSetupTime =
-                  //         angleToMin;
+                  //     utils.showOverlayText(context);
+                  //     Offset clickPoint = point.localPosition;
+                  //     int angleToMin = utils.angleToMin(clickPoint, Size(350, 350));
+                  //     context.read<TimerController>().setSetupTime = angleToMin;
                   //   },
                   //   child: Stack(children: [
-                  //     // BatteryType(clickPoint: clickPoint)
-                  //     BatteryTypeBase(
-                  //         size: Size(mainSize.width, mainSize.height)),
-                  //     BatteryType(
-                  //         size: Size(mainSize.width, mainSize.height),
-                  //         isOnTimer: false,
-                  //         setupTime:
-                  //         context.read<TimerController>().setupTime,
-                  //         clickPoint:
-                  //         context.read<TimerController>().clickPoint),
+                  //     PizzaTypeBase(size: Size(350, 350)),
+                  //     PizzaType(
+                  //       size: Size(350, 350),
+                  //       isOnTimer: false,
+                  //       setupTime: context.read<TimerController>().setupTime,
+                  //     ),
                   //   ]),
                   // ),
+                  GestureDetector(
+                    onPanUpdate: (point) {
+                      // utils.showOverlayText(context);
+                      Offset clickPoint = point.localPosition;
+                      context.read<TimerController>().setClickPoint = clickPoint;
+
+                      int angleToMin = utils.angleToMin(clickPoint, Size(350, 350));
+                      context.read<TimerController>().setSetupTime = angleToMin;
+                    },
+                    child: Stack(children: [
+                      // BatteryType(clickPoint: clickPoint)
+                      BatteryTypeBase(
+                          size: Size(mainSize.width, mainSize.height)),
+                      BatteryType(
+                          size: Size(mainSize.width, mainSize.height),
+                          isOnTimer: false,
+                          setupTime:
+                          context.read<TimerController>().setupTime,
+                          clickPoint:
+                          context.read<TimerController>().clickPoint),
+                    ]),
+                  ),
                 )),
             SizedBox(
               height: mainSize.height * (2.0 / 10),

@@ -1,12 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_study/time_timer/utils/timer_utils.dart';
-import 'dart:async';
-import 'dart:math' as math;
 import 'package:provider/provider.dart';
 import 'package:flutter_study/time_timer/provider/timer_controller.dart';
 import 'package:flutter_study/time_timer/provider/app_config.dart';
-
-
 
 class BatteryType extends StatefulWidget {
   bool isOnTimer = false;
@@ -23,40 +19,11 @@ class BatteryType extends StatefulWidget {
 }
 
 class _BatteryTypeState extends State<BatteryType> {
-  late Timer _timer;
 
   _BatteryTypeState();
 
   @override
-  void initState() {
-    if (widget.isOnTimer) {
-      print('한 번만 작동');
-      _timer = Timer.periodic(Duration(seconds: 1), (timer) {
-        bool isPlaying = context.read<TimerController>().isPlaying;
-        if(isPlaying){
-          widget.setupTime -= 1;
-          if(widget.setupTime > -2){
-            setState(() { print('남은 시간 : ${widget.setupTime}'); });
-          } else {
-            _timer.cancel();
-          }
-        }
-      });
-    }
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    if (widget.isOnTimer) {
-      _timer.cancel();
-    }
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
-
     return CustomPaint(
       size: widget.size, // 원하는 크기로 지정
       painter: BatteryTypePainter(
@@ -80,84 +47,87 @@ class BatteryTypePainter extends CustomPainter {
       ..color = Colors.greenAccent
       ..style = PaintingStyle.fill;
 
-    Paint paint2 = Paint() // 구분선용
-      ..color = Colors.white
-      ..style = PaintingStyle.fill;
-
     double sizeH = size.height;
     double sizeW = size.width;
 
     double strokeW = (sizeH * 0.03).floorToDouble(); // 선 굵기 3프로
     double paddingL = (sizeH * 0.15).floorToDouble(); // 시간 부분 패딩 사이즈
 
-    // double lineH = (sizeH * 0.015).floorToDouble(); // 구분선은 외곽선의 절반?
-
     double netH = sizeH - (strokeW * 3); // 배경 여백 밑 테두리 제외한 높이 좌표
     double netLength = sizeH - (strokeW * 6); // 상, 하 여백 밑 테두리 제외한 빈공간 절대높이
 
+    double sectionGap = (sizeH * 0.015).floorToDouble(); // 섹션 사이의 거리 // ex) 7
+    double sectionLength = (netLength - sectionGap * 9) / 10; // ex) 33.231428571428566
+    double sectionAmount = sectionLength + sectionGap; // gap 포함한 섹션 크기 ex) 40정도
 
-    double width = size.width;
-
-    int clickToMin = ((netH - clickPoint.dy)/netLength * 60).floor();
-
+    // print('섹션 갭 ${sectionGap}, 네트 높이 :  $netLength, 가용공간 : ${netLength - sectionGap * 9}',);
+    // print('섹션높이 : ${(netLength - sectionGap * 9)/10}',);
     // print('네트높이 : ${netLength}, 시간 : ${clickToMin}, 클릭Y : ${clickPoint.dy}, 최대좌표 : ${netH}, 상단여백 : ${strokeW*2.5}');
 
-    int sectionCnt = (clickToMin/6).floor();
-    // print(sectionCnt);
-    double sectionLength = (netLength - 7 * 9) / 10;
-    // print(sectionLength);
+    Map<int,double> sectionMap = {};
 
+    double clickY = clickPoint.dy;
+    int drawCnt = 0;
 
+    double minToPoint = 0.0;
 
-    double minToPoint = netH - (netLength / 60) * clickToMin;
+    /** 클릭 위치에 따른 draw 좌표를 도출한다 */
+    for(int i = 0 ; i<10 ; i++){
+      sectionMap[i] = netH - (sectionAmount * (i+1) - sectionGap); // 섹션의 상단
+      if(clickY < netH - (sectionAmount * i) && clickY > netH - (sectionAmount * (i+1))){
+        double btm = netH - (sectionAmount * i);
+        double top = netH - (sectionAmount * (i+1) - sectionGap);
+        double gap = (btm-top)/6;
 
-    // print(minToPoint);
+        double min = ((btm - clickY)/gap).floor()+1;
+        if(min > 0 && min <= 6){
+          minToPoint = min * gap;
+        } else {
+          minToPoint = 6 * gap;
+        }
 
-    // 10등분을 하려면 여백선은 11개가 필요하다
+        drawCnt = i;
+        // print('${i+1} 분위');
+      }
+    }
 
-    if(clickToMin <= 15){
+    double radius = 7.0;
+    Rect rect;
+    RRect rRect;
+
+    if(drawCnt <= 2){
       paint.color = Colors.red;
-    } else if (clickToMin <= 30) {
+    } else if (drawCnt <= 5) {
       paint.color = Colors.orange;
-    } else if (clickToMin <= 60) {
+    } else {
       paint.color = Colors.greenAccent;
     }
 
-    double dy = clickPoint.dy;
-    int intDy = dy.floor();
-    double radius = 15.0;
-    Rect rect;
-    RRect rRect;
-    // print(size.height); // 500??
+    if(drawCnt == 0){ // 한 칸만 있을 때
 
-    if(clickToMin >= 0 && clickToMin < 60){
-      rect  = Rect.fromLTRB(paddingL, minToPoint, width-paddingL, netH);
-      RRect rRect = RRect.fromRectAndRadius(rect, Radius.circular(radius));
-
-      rRect = RRect.fromRectAndCorners(rect,
-    bottomLeft: Radius.circular(radius), bottomRight: Radius.circular(radius));
-      canvas.drawRRect(rRect, paint);
-
-    } else if (clickToMin >= 60) {
-      rect  = Rect.fromLTRB(paddingL, strokeW * 3, width-paddingL, netH);
+      /** 좌표에 따라 그려지는 부분 */
+      rect  = Rect.fromLTRB(paddingL, netH-minToPoint, sizeW-paddingL, netH);
       rRect = RRect.fromRectAndRadius(rect, Radius.circular(radius));
       canvas.drawRRect(rRect, paint);
+
+    } else if(drawCnt < 10) { // 두 칸 이상일 때
+
+      /** 꽉 찬 섹션 부분 */
+      for(int i = 0 ; i < drawCnt ; i++){
+        double? sectionTop = sectionMap[i];
+        rect  = Rect.fromLTRB(paddingL, sectionTop!, sizeW-paddingL, sectionTop!+sectionLength);
+        rRect = RRect.fromRectAndRadius(rect, Radius.circular(radius));
+        canvas.drawRRect(rRect, paint);
+      }
+
+      /** 좌표에 따라 그려지는 부분 */
+      double? sectionBtm = sectionMap[drawCnt-1]!-sectionGap;
+      rect  = Rect.fromLTRB(paddingL, sectionBtm!-minToPoint, sizeW-paddingL, sectionBtm!);
+      rRect = RRect.fromRectAndRadius(rect, Radius.circular(radius));
+      canvas.drawRRect(rRect, paint);
+
     }
-
-    for(double i = netH ; i > 30 ; i-=sectionLength+7){
-      canvas.drawRect(Rect.fromLTRB(paddingL, i+5, paddingL * 1.8, i), paint2);
     }
-
-    // for(int i = 0 ; i < sectionCnt ; i++){
-    //   // print('i : ${i} , section : ${sectionCnt}');
-    //   if(i < sectionCnt){
-    //     print('선 : ${i}');
-    //     canvas.drawRect(Rect.fromLTRB(paddingL, netH-sectionLength * (i+1) -4 - (i*8), width-paddingL, netH-sectionLength * (i+1) - (i * 8)), paint2);
-    //   }
-    // }
-    }
-
-
 
   @override
   bool shouldRepaint(CustomPainter oldDelegate) {
@@ -165,29 +135,15 @@ class BatteryTypePainter extends CustomPainter {
   }
 }
 
-
-class BatteryTypeBase extends StatefulWidget {
-
+class BatteryTypeBase extends StatelessWidget{
   Size size;
 
   BatteryTypeBase({super.key,required this.size});
 
   @override
-  State<StatefulWidget> createState() {
-    return _BatteryTypeBaseState();
-  }
-}
-
-class _BatteryTypeBaseState extends State<BatteryTypeBase> {
-  late Timer _timer;
-
-  _BatteryTypeBaseState();
-
-
-  @override
   Widget build(BuildContext context) {
     return CustomPaint(
-      size: widget.size, // 원하는 크기로 지정
+      size: size, // 원하는 크기로 지정
       painter: BatteryTypeBasePainter(
       ),
     );
