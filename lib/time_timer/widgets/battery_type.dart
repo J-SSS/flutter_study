@@ -8,9 +8,8 @@ class BatteryType extends StatefulWidget {
   bool isOnTimer = false;
   int setupTime;
   Size size;
-  final Offset clickPoint;
 
-  BatteryType({super.key,required this.size, required this.isOnTimer, required this.setupTime, required this.clickPoint});
+  BatteryType({super.key,required this.size, required this.isOnTimer, required this.setupTime});
 
   @override
   State<StatefulWidget> createState() {
@@ -27,22 +26,22 @@ class _BatteryTypeState extends State<BatteryType> {
     return CustomPaint(
       size: widget.size, // 원하는 크기로 지정
       painter: BatteryTypePainter(
-        angleToMin: widget.isOnTimer ? widget.setupTime : context.watch<TimerController>().setupTime, clickPoint: context.watch<TimerController>().clickPoint
+        setupTime: widget.isOnTimer ? widget.setupTime : context.watch<TimerController>().setupTime
       ),
     );
   }
 }
 
 class BatteryTypePainter extends CustomPainter {
-  int angleToMin;
-  Offset clickPoint;
+  int setupTime;
 
   BatteryTypePainter({
-    required this.angleToMin, required this.clickPoint
-  });
+    required this.setupTime});
 
   @override
   void paint(Canvas canvas, Size size) {
+    if(setupTime == 0) return;
+
     Paint paint = Paint()
       ..color = Colors.greenAccent
       ..style = PaintingStyle.fill;
@@ -60,35 +59,25 @@ class BatteryTypePainter extends CustomPainter {
     double sectionLength = (netLength - sectionGap * 9) / 10; // ex) 33.231428571428566
     double sectionAmount = sectionLength + sectionGap; // gap 포함한 섹션 크기 ex) 40정도
 
-    // print('섹션 갭 ${sectionGap}, 네트 높이 :  $netLength, 가용공간 : ${netLength - sectionGap * 9}',);
-    // print('섹션높이 : ${(netLength - sectionGap * 9)/10}',);
-    // print('네트높이 : ${netLength}, 시간 : ${clickToMin}, 클릭Y : ${clickPoint.dy}, 최대좌표 : ${netH}, 상단여백 : ${strokeW*2.5}');
-
+    int drawCnt = 0;
+    int remainMin = 0;
+    double minToPoint = 0.0;
     Map<int,double> sectionMap = {};
 
-    double clickY = clickPoint.dy;
-    int drawCnt = 0;
-
-    double minToPoint = 0.0;
-
-    /** 클릭 위치에 따른 draw 좌표를 도출한다 */
     for(int i = 0 ; i<10 ; i++){
       sectionMap[i] = netH - (sectionAmount * (i+1) - sectionGap); // 섹션의 상단
-      if(clickY < netH - (sectionAmount * i) && clickY > netH - (sectionAmount * (i+1))){
-        double btm = netH - (sectionAmount * i);
-        double top = netH - (sectionAmount * (i+1) - sectionGap);
-        double gap = (btm-top)/6;
+    }
+    remainMin = (setupTime % 6).floor();
+    drawCnt = remainMin == 0 ? (setupTime / 6).floor() - 1 : (setupTime / 6).floor();
 
-        double min = ((btm - clickY)/gap).floor()+1;
-        if(min > 0 && min <= 6){
-          minToPoint = min * gap;
-        } else {
-          minToPoint = 6 * gap;
-        }
+    double btm = netH - (sectionAmount * drawCnt);
+    double top = netH - (sectionAmount * (drawCnt+1) - sectionGap);
+    double gap = (btm-top)/6;
 
-        drawCnt = i;
-        // print('${i+1} 분위');
-      }
+    if(remainMin != 0){
+      minToPoint = remainMin * gap;
+    } else {
+      minToPoint = 6 * gap;
     }
 
     double radius = 7.0;

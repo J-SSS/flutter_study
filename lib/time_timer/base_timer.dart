@@ -65,24 +65,8 @@ class MyApp extends StatelessWidget {
 class MyTimeTimer extends StatelessWidget {
 // GlobalKey 생성
   // final GlobalKey<_PizzaTypeState> pizzaTypeKey = GlobalKey<_PizzaTypeState>();
-  late MediaQueryData mediaQueryData;
-  late Size mediaSize;
 
-  // Map<String,dynamic> getSize(Size size){
-  //   double w = size.width;
-  //   double h = size.height;
-  //
-  //   Map<String,dynamic> rsltMap = {};
-  //
-  //   if(h > w) {
-  //     rsltMap['ori'] = 'port'; // Orientation.portrait: 세로 방향
-  //     rsltMap['size'] =
-  //   } else {
-  //     rsltMap['ori'] = 'land'; // Orientation.landscape: 가로 방향
-  //
-  //   }
-  //   return rsltMap;
-  // }
+  late Size mediaSize;
 
   bool isPortrait(Size size){
     double w = size.width;
@@ -95,15 +79,13 @@ class MyTimeTimer extends StatelessWidget {
       return false;
     } else {
       return true;
-
     }
-
   }
 
   @override
   Widget build(BuildContext context) {
+    mediaSize = MediaQuery.sizeOf(context);
     AppManager.log('메인 생성');
-
     // 초기화
     context.read<TimerViewModel>().loadPreset();
 
@@ -111,15 +93,10 @@ class MyTimeTimer extends StatelessWidget {
 
     WidgetsBinding.instance?.addPostFrameCallback((_) {
       // print('초기화');
-
-      //   // jdi 찾아보기
-      //   context.read<AppConfigListener>().setMediaQuery = MediaQuery.of(context);
-      //   double painterSize = context.read<AppConfigListener>().painterSize;
     });
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
-        // backgroundColor: Colors.green,
         title: Text('My Time Timer'),
         centerTitle: true,
         toolbarHeight: mainSize.height / 10,
@@ -149,8 +126,8 @@ class MyTimeTimer extends StatelessWidget {
                   //   onPanUpdate: (point) {
                   //     utils.showOverlayText(context);
                   //     Offset clickPoint = point.localPosition;
-                  //     int angleToMin = utils.angleToMin(clickPoint, Size(350, 350));
-                  //     context.read<TimerController>().setSetupTime = angleToMin;
+                  //     int clickToMin = utils.angleToMin(clickPoint, Size(350, 350));
+                  //     context.read<TimerController>().setSetupTime = clickToMin;
                   //   },
                   //   child: Stack(children: [
                   //     PizzaTypeBase(size: Size(350, 350)),
@@ -163,24 +140,19 @@ class MyTimeTimer extends StatelessWidget {
                   // ),
                   GestureDetector(
                     onPanUpdate: (point) {
-                      // utils.showOverlayText(context);
+                      utils.showOverlayText(context);
                       Offset clickPoint = point.localPosition;
-                      context.read<TimerController>().setClickPoint = clickPoint;
-
-                      int angleToMin = utils.angleToMin(clickPoint, Size(350, 350));
-                      context.read<TimerController>().setSetupTime = angleToMin;
+                      int clickToMin = utils.clickToMin2(clickPoint, mediaSize);
+                      context.read<TimerController>().setSetupTime = clickToMin;
                     },
                     child: Stack(children: [
-                      // BatteryType(clickPoint: clickPoint)
                       BatteryTypeBase(
                           size: Size(mainSize.width, mainSize.height)),
                       BatteryType(
                           size: Size(mainSize.width, mainSize.height),
                           isOnTimer: false,
                           setupTime:
-                          context.read<TimerController>().setupTime,
-                          clickPoint:
-                          context.read<TimerController>().clickPoint),
+                          context.read<TimerController>().setupTime),
                     ]),
                   ),
                 )),

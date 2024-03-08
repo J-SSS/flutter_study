@@ -32,8 +32,7 @@ class TimerCreator extends StatelessWidget {
             BatteryType(
                 size: Size(mainSize.width, mainSize.height),
                 isOnTimer: false,
-                setupTime: context.read<TimerController>().setupTime,
-                clickPoint: context.read<TimerController>().clickPoint),
+                setupTime: context.read<TimerController>().setupTime,),
           ]);
         }
       default:

@@ -7,9 +7,7 @@ import 'package:flutter_study/time_timer/base_timer.dart';
 import 'dart:developer';
 
 import 'package:flutter_study/time_timer/provider/app_config.dart';
-
 import 'package:flutter_study/time_timer/provider/timer_controller.dart';
-
 
 /** 원형 타입에서 클릭 위치를 1/60 시간 단위로 변환 */
 int angleToMin(Offset clickPoint, Size size) {
@@ -44,6 +42,53 @@ int angleToMin(Offset clickPoint, Size size) {
   angleToMin = (sweepAngle / (2 * math.pi / 60)).floor();
   angleToMin == 0 ? angleToMin = 60 : angleToMin;
 
+  return angleToMin;
+}
+
+int clickToMin2(Offset clickPoint, Size size) {
+  int angleToMin;
+
+  double sizeH = size.height * 0.6;
+  double strokeW = (sizeH * 0.03).floorToDouble(); // 선 굵기 3프로
+
+  double netH = sizeH - (strokeW * 3); // 배경 여백 밑 테두리 제외한 높이 좌표
+  double netLength = sizeH - (strokeW * 6); // 상, 하 여백 밑 테두리 제외한 빈공간 절대높이
+
+  // print('섹션 갭 ${sectionGap}, 네트 높이 :  $netLength, 가용공간 : ${netLength - sectionGap * 9}',);
+  // print('섹션높이 : ${(netLength - sectionGap * 9)/10}',);
+  // print('네트높이 : ${netLength}, 시간 : ${clickToMin}, 클릭Y : ${clickPoint.dy}, 최대좌표 : ${netH}, 상단여백 : ${strokeW*2.5}');
+
+  double sectionGap = (sizeH * 0.015).floorToDouble(); // 섹션 사이의 거리 // ex) 7
+  double sectionLength = (netLength - sectionGap * 9) / 10; // ex) 33.231428571428566
+  double sectionAmount = sectionLength + sectionGap; // gap 포함한 섹션 크기 ex) 40정도
+  double clickY = clickPoint.dy;
+
+  int drawCnt = 0;
+  int pointToMin = 0;
+
+  /** 클릭 위치에 따른 draw 좌표를 도출한다 */
+  if(strokeW * 3 >= clickY){
+    angleToMin = 60;
+  } else if(netH <= clickY){
+    angleToMin = 0;
+  } else {
+    for(int i = 0 ; i<10 ; i++){
+      if(clickY < netH - (sectionAmount * i) && clickY > netH - (sectionAmount * (i+1))){
+        double btm = netH - (sectionAmount * i);
+        double top = netH - (sectionAmount * (i+1) - sectionGap);
+        double gap = (btm-top)/6;
+        double min = ((btm - clickY)/gap).floor()+1;
+
+        if(min > 0 && min < 6){
+          pointToMin = min.toInt();
+        } else {
+          pointToMin = 6;
+        }
+        drawCnt = i;
+      }
+    }
+    angleToMin = (drawCnt * 6) + pointToMin;
+  }
   return angleToMin;
 }
 
