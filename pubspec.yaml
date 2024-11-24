@@ -33,6 +33,12 @@ dependencies:
   shared_preferences: ^2.0.12
   flutter_icons_null_safety: ^1.1.0
 
+  path_provider: ^2.0.12
+#  ffmpeg_kit_flutter: ^6.0.3
+#  ffmpeg_kit_flutter_full_gpl: ^6.0.3
+  ffmpeg_kit_flutter_min_gpl: ^6.0.3
+  just_audio: ^0.9.34
+  http: ^1.0.0
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
