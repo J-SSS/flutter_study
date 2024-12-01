@@ -40,13 +40,11 @@ class TimerRepository {
   Future<PresetModel?> getPreset() async {
     final jsonString = _prefs.getString('preset');
     if (jsonString != null) {
-      print('로딩 값 : ${jsonString}');
+      // print('로딩 값 : ${jsonString}');
       final Map<String, dynamic> jsonMap = json.decode(jsonString);
-      // print('제이슨 : ${jsonMap}');
       return PresetModel.fromJson(jsonMap);
     } else {
       print('default 값 반환');
-      // return PresetModel.init();
       return PresetModel.fromJson(null);
     }
   }
